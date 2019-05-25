@@ -45,6 +45,18 @@ public class Player {
 		movementDirection = direction;
 	}
 	
+	public void shoot() {
+		if(movementDirection == GameData.MovementDirections.UP && row > 0) {
+			Game.game.explodeTile(row-1, column);
+		}else if (movementDirection == GameData.MovementDirections.DOWN && row < GameData.TILE_AMOUNT-1) {
+			Game.game.explodeTile(row+1, column);
+		}else if (movementDirection == GameData.MovementDirections.LEFT && column > 0) {
+			Game.game.explodeTile(row, column-1);
+		}else if (movementDirection == GameData.MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
+			Game.game.explodeTile(row, column+1);
+		}
+	}
+	
 	public int getRow() {
 		return row;
 	}

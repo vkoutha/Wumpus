@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class GameData {
 	public static BufferedImage characterSprite = null, characterFowardsStillSprite = null, characterForwardsRunningSprite = null,
 			characterBackwardsStillSprite = null, characterBackwardsRunningSprite = null, characterLeftStillSprite = null, characterLeftRunningSprite = null,
 			characterRightStillSprite = null, characterRightRunningSprite = null;
+	public static BufferedImage flashlightSprite, compassSprite, goldSprite;
 	private static Image explosionImage = null;
 	public static ImageIcon explosionAnimation = null;
 	
@@ -43,6 +45,8 @@ public class GameData {
 			characterRightStillSprite = characterSprite.getSubimage(470, 600, 470, 590);
 			characterLeftRunningSprite = characterSprite.getSubimage(470, 1200, 460, 580);
 			characterLeftStillSprite = characterSprite.getSubimage(0, 1200, 460, 580);
+			flashlightSprite = ImageIO.read(GameData.class.getResource("/img/flashlightSprite.png")); 
+			compassSprite = ImageIO.read(GameData.class.getResource("/img/compassSprite.gif"));
 			explosionAnimation = new ImageIcon(GameData.class.getResource("/img/explosionGIF.gif"));
 			explosionImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH*1.25), TILE_HEIGHT, Image.SCALE_DEFAULT);
 			explosionAnimation = new ImageIcon(explosionImage);
@@ -52,6 +56,15 @@ public class GameData {
 			e.printStackTrace();
 		}
 	}
+	
+	 public static BufferedImage imageToBufferedImage(Image im) {
+	     BufferedImage bi = new BufferedImage
+	        (im.getWidth(null),im.getHeight(null),BufferedImage.TYPE_INT_RGB);
+	     Graphics g = bi.getGraphics();
+	     g.drawImage(im, 0, 0, null);
+	     g.dispose();
+	     return bi;
+	  }
 	
 	public static void rescaleAnimations() {
 		explosionImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH*1.25), TILE_HEIGHT, Image.SCALE_DEFAULT);
@@ -63,6 +76,13 @@ public class GameData {
 		DOWN,
 		LEFT,
 		RIGHT
+	}
+	
+	public enum ItemTypes{
+		FLASHLIGHT,
+		COMPASS,
+		GOLD,
+		NONE
 	}
 
 }

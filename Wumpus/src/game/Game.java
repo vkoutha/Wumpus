@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -14,8 +15,11 @@ import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
+import game.GameData.ItemTypes;
 
 public class Game implements ActionListener, KeyListener {
 
@@ -25,7 +29,7 @@ public class Game implements ActionListener, KeyListener {
 	private Renderer renderer;
 	private Tile[][] tiles;
 	private Player player;
-	public JLabel explosionGIF;
+	private JLabel explosionGIF;
 	private Clip themePlayer;
 	private boolean explosionInProgress;
 
@@ -43,7 +47,7 @@ public class Game implements ActionListener, KeyListener {
 		frame.addKeyListener(this);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initialize();
-		startMusic();
+		//startMusic();
 		timer.start();
 	}
 
@@ -54,6 +58,7 @@ public class Game implements ActionListener, KeyListener {
 				tiles[r][c] = new Tile(r, c);
 			}
 		}
+		tiles[5][4].setItem(ItemTypes.FLASHLIGHT);
 		player = new Player();
 		explosionGIF = new JLabel(GameData.explosionAnimation);
 		explosionGIF.setBounds(500, 500, 100, 100);
@@ -81,6 +86,8 @@ public class Game implements ActionListener, KeyListener {
 			for (Tile tile : tileArr)
 				tile.render(g);
 		player.render(g);	
+		g.setColor(Color.WHITE);
+		g.drawString("Remaining Explosives: 5" , 5, 20);
 	}
 
 	private void update() {
@@ -99,7 +106,26 @@ public class Game implements ActionListener, KeyListener {
 			GameData.rescaleAnimations();
 			renderer.remove(explosionGIF);
 			explosionGIF = new JLabel(GameData.explosionAnimation);
-			System.out.println("REsizing");
+		}
+	}
+	
+	public void explodeTile(int row, int column) {
+		if(!explosionInProgress) {
+			explosionInProgress = true;
+			explosionGIF.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
+			renderer.add(explosionGIF);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					long startTime = System.currentTimeMillis();
+					while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS);
+					renderer.remove(explosionGIF);
+					explosionInProgress = false;
+				}
+			}).start();
+		}
+		if(tiles[row][column].getItem() != ItemTypes.NONE) {
+			tiles[row][column].setItem(ItemTypes.NONE);
 		}
 	}
 
@@ -129,20 +155,11 @@ public class Game implements ActionListener, KeyListener {
 			player.move(GameData.MovementDirections.DOWN);
 			break;
 		case KeyEvent.VK_SPACE:
-			if(!explosionInProgress) {
-				explosionInProgress = true;
-				explosionGIF.setBounds(player.getColumn() * GameData.TILE_WIDTH, player.getRow() * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
-				renderer.add(explosionGIF);
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						long startTime = System.currentTimeMillis();
-						while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS);
-						renderer.remove(explosionGIF);
-						explosionInProgress = false;
-					}
-				}).start();
-			}
+			player.shoot();
+			break;
+		case KeyEvent.VK_M:
+			themePlayer.stop();
+			JOptionPane.showMessageDialog(null, "Saw dudeee", "meep", JOptionPane.INFORMATION_MESSAGE);
 			break;
 		}
 	}
