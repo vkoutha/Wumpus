@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 public class GameData {
 	
 	public static final String FRAME_NAME = "Wumpus";
+	public static int FRAME_EXTENDED_WIDTH = 940;
 	public static int FRAME_WIDTH = 800;
 	public static int FRAME_HEIGHT = 800;
 	public static int FRAME_WIDTH_DIFFERENCE = 0;
@@ -18,16 +19,21 @@ public class GameData {
 	public static final int UPDATE_SPEED_MS = 20;
 	public static final int EXPLOSION_ANIMATION_TIME_MS = 1500;
 	
-	public static final int TILE_AMOUNT = 10;
+	public static final int TILE_AMOUNT = 8;
 	public static int TILE_WIDTH = (FRAME_WIDTH/TILE_AMOUNT);
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/TILE_AMOUNT);
+	
+	public static final int TOOLBAR_SLOTS = 4;
+	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
+	
+	public static final float FLASHLIGHT_BLOCK_OPACITY = .6f;
 
 	public static BufferedImage rockSprite = null, grassSprite = null;
 	public static BufferedImage characterSprite = null, characterFowardsStillSprite = null, characterForwardsRunningSprite = null,
 			characterBackwardsStillSprite = null, characterBackwardsRunningSprite = null, characterLeftStillSprite = null, characterLeftRunningSprite = null,
 			characterRightStillSprite = null, characterRightRunningSprite = null;
-	public static BufferedImage flashlightSprite, compassSprite, goldSprite;
-	private static Image explosionImage = null;
+	public static BufferedImage flashlightSprite, compassSprite, goldSprite, explosiveSprite;
+	private static Image explosionAnimationImage = null;
 	public static ImageIcon explosionAnimation = null;
 	
 	static {
@@ -47,9 +53,10 @@ public class GameData {
 			characterLeftStillSprite = characterSprite.getSubimage(0, 1200, 460, 580);
 			flashlightSprite = ImageIO.read(GameData.class.getResource("/img/flashlightSprite.png")); 
 			compassSprite = ImageIO.read(GameData.class.getResource("/img/compassSprite.gif"));
+			explosiveSprite = ImageIO.read(GameData.class.getResource("/img/explosive.png"));
 			explosionAnimation = new ImageIcon(GameData.class.getResource("/img/explosionGIF.gif"));
-			explosionImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH*1.25), TILE_HEIGHT, Image.SCALE_DEFAULT);
-			explosionAnimation = new ImageIcon(explosionImage);
+			explosionAnimationImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH*1.25), TILE_HEIGHT, Image.SCALE_DEFAULT);
+			explosionAnimation = new ImageIcon(explosionAnimationImage);
 			//explosionAnimation.setImage(explosionBufferedImage.getScaledInstance(500, 500, Image.SCALE_DEFAULT));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -67,8 +74,8 @@ public class GameData {
 	  }
 	
 	public static void rescaleAnimations() {
-		explosionImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH*1.25), TILE_HEIGHT, Image.SCALE_DEFAULT);
-		explosionAnimation = new ImageIcon(explosionImage);
+		explosionAnimationImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
+		explosionAnimation = new ImageIcon(explosionAnimationImage);
 	}
 	
 	public enum MovementDirections{
@@ -82,6 +89,7 @@ public class GameData {
 		FLASHLIGHT,
 		COMPASS,
 		GOLD,
+		EXPLOSIVE,
 		NONE
 	}
 

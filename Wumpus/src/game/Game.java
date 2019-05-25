@@ -29,6 +29,7 @@ public class Game implements ActionListener, KeyListener {
 	private Renderer renderer;
 	private Tile[][] tiles;
 	private Player player;
+	private Toolbar toolbar;
 	private JLabel explosionGIF;
 	private Clip themePlayer;
 	private boolean explosionInProgress;
@@ -38,7 +39,8 @@ public class Game implements ActionListener, KeyListener {
 		explosionGIF = new JLabel();
 		timer = new Timer(GameData.UPDATE_SPEED_MS, this);
 		renderer = new Renderer();
-		renderer.setPreferredSize(new Dimension(GameData.FRAME_WIDTH, GameData.FRAME_HEIGHT));
+		renderer.setPreferredSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
+		frame.setMinimumSize(new Dimension(500, 500));
 		frame.add(renderer);
 		frame.setResizable(true);
 		frame.setVisible(true);
@@ -47,7 +49,7 @@ public class Game implements ActionListener, KeyListener {
 		frame.addKeyListener(this);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initialize();
-		//startMusic();
+		startMusic();
 		timer.start();
 	}
 
@@ -59,10 +61,11 @@ public class Game implements ActionListener, KeyListener {
 			}
 		}
 		tiles[5][4].setItem(ItemTypes.FLASHLIGHT);
+		tiles[3][3].setItem(ItemTypes.EXPLOSIVE);
 		player = new Player();
+		toolbar = new Toolbar();
 		explosionGIF = new JLabel(GameData.explosionAnimation);
 		explosionGIF.setBounds(500, 500, 100, 100);
-		//renderer.add(explosionGIF);
 		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_WIDTH;
 		GameData.FRAME_HEIGHT_DIFFERENCE = frame.getHeight() - GameData.FRAME_HEIGHT;
 	}
@@ -73,7 +76,7 @@ public class Game implements ActionListener, KeyListener {
 			themePlayer = AudioSystem.getClip();
 			audioIn =  AudioSystem.getAudioInputStream(getClass().getResource("/sound/theme.wav"));
 			themePlayer.open(audioIn);
-			//themePlayer.start();
+			themePlayer.start();
 			themePlayer.loop(-1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -85,7 +88,8 @@ public class Game implements ActionListener, KeyListener {
 		for (Tile[] tileArr : tiles)
 			for (Tile tile : tileArr)
 				tile.render(g);
-		player.render(g);	
+		player.render(g);
+		toolbar.render(g);
 		g.setColor(Color.WHITE);
 		g.drawString("Remaining Explosives: 5" , 5, 20);
 	}
@@ -103,6 +107,8 @@ public class Game implements ActionListener, KeyListener {
 			GameData.FRAME_HEIGHT = (int) frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE;
 			GameData.TILE_WIDTH = GameData.FRAME_WIDTH / GameData.TILE_AMOUNT;
 			GameData.TILE_HEIGHT = GameData.FRAME_HEIGHT / GameData.TILE_AMOUNT;
+			GameData.FRAME_EXTENDED_WIDTH = GameData.FRAME_WIDTH + 140;
+			GameData.TOOLBAR_SLOT_HEIGHT = GameData.FRAME_HEIGHT/GameData.TOOLBAR_SLOTS;
 			GameData.rescaleAnimations();
 			renderer.remove(explosionGIF);
 			explosionGIF = new JLabel(GameData.explosionAnimation);
@@ -110,23 +116,19 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	public void explodeTile(int row, int column) {
-		if(!explosionInProgress) {
-			explosionInProgress = true;
-			explosionGIF.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
-			renderer.add(explosionGIF);
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					long startTime = System.currentTimeMillis();
-					while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS);
-					renderer.remove(explosionGIF);
-					explosionInProgress = false;
-				}
-			}).start();
-		}
-		if(tiles[row][column].getItem() != ItemTypes.NONE) {
-			tiles[row][column].setItem(ItemTypes.NONE);
-		}
+		explosionInProgress = true;
+		explosionGIF.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
+		renderer.add(explosionGIF);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				long startTime = System.currentTimeMillis();
+				while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS);
+				renderer.remove(explosionGIF);
+				explosionInProgress = false;
+			}
+		}).start();
+		tiles[row][column].setItem(ItemTypes.NONE);
 	}
 
 	@Override
@@ -155,11 +157,18 @@ public class Game implements ActionListener, KeyListener {
 			player.move(GameData.MovementDirections.DOWN);
 			break;
 		case KeyEvent.VK_SPACE:
-			player.shoot();
+			if(!explosionInProgress) {
+				player.shoot();
+			}
+			break;
+		case KeyEvent.VK_A:
+			if(tiles[player.getRow()][player.getColumn()].getItem() != ItemTypes.NONE) {
+				toolbar.addItem(tiles[player.getRow()][player.getColumn()].getItem());
+				tiles[player.getRow()][player.getColumn()].removeItem();
+			}
 			break;
 		case KeyEvent.VK_M:
 			themePlayer.stop();
-			JOptionPane.showMessageDialog(null, "Saw dudeee", "meep", JOptionPane.INFORMATION_MESSAGE);
 			break;
 		}
 	}
@@ -172,6 +181,10 @@ public class Game implements ActionListener, KeyListener {
 
 	public JFrame getFrame() {
 		return frame;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 
 	public Tile[][] getTiles() {
