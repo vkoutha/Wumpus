@@ -4,6 +4,8 @@ package game;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import game.GameData.MovementDirections;
+
 public class Player {
 	
 	private int row, column;
@@ -13,29 +15,29 @@ public class Player {
 	
 	public Player() {
 		spriteToUse = GameData.characterBackwardsStillSprite;
-		movementDirection = null;
+		movementDirection = MovementDirections.DOWN;
 	}
 	
-	public void move(GameData.MovementDirections direction) {
-		if(direction == GameData.MovementDirections.UP && row > 0) {
+	public void move(MovementDirections direction) {
+		if(direction == MovementDirections.UP && row > 0) {
 			spriteToUse = GameData.characterFowardsStillSprite;
 			if(movementDirection == direction) {
 				spriteToUse = GameData.characterForwardsRunningSprite;
 				row--;
 			}
-		}else if (direction == GameData.MovementDirections.DOWN && row < GameData.TILE_AMOUNT-1) {
+		}else if (direction == MovementDirections.DOWN && row < GameData.TILE_AMOUNT-1) {
 			spriteToUse = GameData.characterBackwardsStillSprite;
 			if(movementDirection == direction) {
 				spriteToUse = GameData.characterBackwardsRunningSprite;
 				row++;
 			}
-		}else if (direction == GameData.MovementDirections.LEFT && column > 0) {
+		}else if (direction == MovementDirections.LEFT && column > 0) {
 			spriteToUse = GameData.characterLeftStillSprite;
 			if(movementDirection == direction) {
 				spriteToUse = GameData.characterLeftRunningSprite;
 				column--;
 			}
-		}else if (direction == GameData.MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
+		}else if (direction == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
 			spriteToUse = GameData.characterRightStillSprite;
 			if(movementDirection == direction) {
 				spriteToUse = GameData.characterRightRunningSprite;
@@ -43,25 +45,18 @@ public class Player {
 			}
 		}
 		Game.game.getTiles()[row][column].setDiscovered(true);
-		if(flashlightRadius > 0) {
-			
-		}
 		movementDirection = direction;
 	}
 	
 	public void shoot() {
-		if(movementDirection == GameData.MovementDirections.UP && row > 0) {
+		if(movementDirection == MovementDirections.UP && row > 0) {
 			Game.game.explodeTile(row-1, column);
-			Game.game.getTiles()[row-1][column].setDiscovered(true);
-		}else if (movementDirection == GameData.MovementDirections.DOWN && row < GameData.TILE_AMOUNT-1) {
+		}else if (movementDirection == MovementDirections.DOWN && row < GameData.TILE_AMOUNT-1) {
 			Game.game.explodeTile(row+1, column);
-			Game.game.getTiles()[row+1][column].setDiscovered(true);
-		}else if (movementDirection == GameData.MovementDirections.LEFT && column > 0) {
+		}else if (movementDirection == MovementDirections.LEFT && column > 0) {
 			Game.game.explodeTile(row, column-1);
-			Game.game.getTiles()[row][column-1].setDiscovered(true);
-		}else if (movementDirection == GameData.MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
+		}else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
 			Game.game.explodeTile(row, column+1);
-			Game.game.getTiles()[row][column+1].setDiscovered(true);
 		}
 	}
 	

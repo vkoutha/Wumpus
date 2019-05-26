@@ -1,9 +1,10 @@
 package game;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -12,13 +13,16 @@ import java.awt.event.KeyListener;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.swing.ImageIcon;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import game.GameData.GameState;
 import game.GameData.ItemTypes;
 
 public class Game implements ActionListener, KeyListener {
@@ -30,7 +34,10 @@ public class Game implements ActionListener, KeyListener {
 	private Tile[][] tiles;
 	private Player player;
 	private Toolbar toolbar;
+	private GameState gameState;
 	private JLabel explosionGIF;
+	private JButton startGameButton, settingsMenuButton;
+	private AudioInputStream audioInputStream;
 	private Clip themePlayer;
 	private boolean explosionInProgress;
 
@@ -40,13 +47,14 @@ public class Game implements ActionListener, KeyListener {
 		timer = new Timer(GameData.UPDATE_SPEED_MS, this);
 		renderer = new Renderer();
 		renderer.setPreferredSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
-		frame.setMinimumSize(new Dimension(500, 500));
+		renderer.setLayout(new BoxLayout(renderer, BoxLayout.PAGE_AXIS));
+		renderer.setBackground(Color.LIGHT_GRAY);
+		frame.setMinimumSize(new Dimension(800, 800));
 		frame.add(renderer);
 		frame.setResizable(true);
 		frame.setVisible(true);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
-		frame.addKeyListener(this);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initialize();
 		startMusic();
@@ -54,14 +62,17 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	private void initialize() {
+		gameState = GameState.MENU;
+		addButtons();
 		tiles = new Tile[GameData.TILE_AMOUNT][GameData.TILE_AMOUNT];
 		for (int r = 0; r < tiles.length; r++) {
 			for (int c = 0; c < tiles[r].length; c++) {
 				tiles[r][c] = new Tile(r, c);
 			}
 		}
+		tiles[0][0].setDiscovered(true);
 		tiles[5][4].setItem(ItemTypes.FLASHLIGHT);
-		tiles[3][3].setItem(ItemTypes.EXPLOSIVE);
+		tiles[3][3].setItem(ItemTypes.GOLD);
 		player = new Player();
 		toolbar = new Toolbar();
 		explosionGIF = new JLabel(GameData.explosionAnimation);
@@ -69,13 +80,33 @@ public class Game implements ActionListener, KeyListener {
 		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_WIDTH;
 		GameData.FRAME_HEIGHT_DIFFERENCE = frame.getHeight() - GameData.FRAME_HEIGHT;
 	}
+	
+	private void addButtons() {
+		startGameButton = new JButton(GameData.startGameUnselectedIcon);
+		startGameButton.setHorizontalTextPosition(SwingConstants.CENTER);
+		startGameButton.setRolloverIcon(GameData.startGameSelectedIcon);
+		startGameButton.setFocusable(false);
+		startGameButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				gameState = GameState.IN_GAME;
+				renderer.removeAll();
+				frame.addKeyListener(game);
+			}
+		});
+		GameData.removeBackground(startGameButton);
+		startGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		renderer.add(Box.createVerticalStrut(GameData.wumpusLogo.getHeight()*2));
+		renderer.add(startGameButton);
+		settingsMenuButton = new JButton();
+	}
 
 	private void startMusic() { 
-		AudioInputStream audioIn;
 		try {
 			themePlayer = AudioSystem.getClip();
-			audioIn =  AudioSystem.getAudioInputStream(getClass().getResource("/sound/theme.wav"));
-			themePlayer.open(audioIn);
+			audioInputStream =  AudioSystem.getAudioInputStream(getClass().getResource("/sound/theme.wav"));
+			themePlayer.open(audioInputStream);
 			themePlayer.start();
 			themePlayer.loop(-1);
 		} catch (Exception e) {
@@ -85,13 +116,26 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	public void render(Graphics g) {
-		for (Tile[] tileArr : tiles)
-			for (Tile tile : tileArr)
-				tile.render(g);
-		player.render(g);
-		toolbar.render(g);
-		g.setColor(Color.WHITE);
-		g.drawString("Remaining Explosives: 5" , 5, 20);
+		switch(gameState) {
+		case MENU:
+			g.drawImage(GameData.menuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
+			g.drawImage(GameData.wumpusLogo, (GameData.FRAME_EXTENDED_WIDTH/2) - (GameData.wumpusLogo.getWidth()/2), 60, GameData.wumpusLogo.getWidth(), 
+					GameData.wumpusLogo.getHeight(), null);
+			break;
+		case SETTINGS:
+			break;
+		case IN_GAME:
+			for (Tile[] tileArr : tiles)
+				for (Tile tile : tileArr)
+					tile.render(g);
+			player.render(g);
+			toolbar.render(g);
+			g.setColor(Color.WHITE);
+			g.drawString("Remaining Explosives: 5" , 5, 20);
+			break;
+		case PAUSED:
+			break;
+		}
 	}
 
 	private void update() {
@@ -128,6 +172,7 @@ public class Game implements ActionListener, KeyListener {
 				explosionInProgress = false;
 			}
 		}).start();
+		tiles[row][column].setDiscovered(true);
 		tiles[row][column].setItem(ItemTypes.NONE);
 	}
 
@@ -169,6 +214,9 @@ public class Game implements ActionListener, KeyListener {
 			break;
 		case KeyEvent.VK_M:
 			themePlayer.stop();
+			break;
+		case KeyEvent.VK_ESCAPE:
+			gameState = GameState.MENU;
 			break;
 		}
 	}
