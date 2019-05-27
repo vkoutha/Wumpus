@@ -28,15 +28,16 @@ public class GameData {
 	
 	public static final float FLASHLIGHT_BLOCK_OPACITY = .85f;
 
-	public static BufferedImage wumpusLogo = null, menuBackground = null, settingsMenuBackground;
-	public static BufferedImage rockSprite = null, grassSprite = null;
-	public static BufferedImage characterSprite = null, characterFowardsStillSprite = null, characterForwardsRunningSprite = null,
-			characterBackwardsStillSprite = null, characterBackwardsRunningSprite = null, characterLeftStillSprite = null, characterLeftRunningSprite = null,
-			characterRightStillSprite = null, characterRightRunningSprite = null;
+	public static BufferedImage wumpusLogo, menuBackground, settingsMenuBackground;
+	public static BufferedImage rockSprite, grassSprite;
+	public static BufferedImage characterSpriteSheet, characterFowardsStillSprite, characterForwardsRunningSprite,
+			characterBackwardsStillSprite, characterBackwardsRunningSprite, characterLeftStillSprite, characterLeftRunningSprite,
+			characterRightStillSprite, characterRightRunningSprite;
 	public static BufferedImage flashlightSprite, compassSprite, goldSprite, explosiveSprite;
-	public static Icon startGameUnselectedIcon = null, startGameSelectedIcon = null;
-	private static Image explosionAnimationImage = null;
-	public static ImageIcon explosionAnimation = null;
+	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
+			rulesSelectedIcon;
+	private static Image explosionAnimationImage;
+	public static ImageIcon explosionAnimation;
 	
 	static {
 		initMenuSprites();
@@ -52,10 +53,18 @@ public class GameData {
 			menuBackground = menuBackground.getSubimage(0, 150, menuBackground.getWidth(), menuBackground.getHeight()-150);
 			settingsMenuBackground = ImageIO.read(GameData.class.getResource("/img/backgrounds/settingsMenuBackground.jpg"));
 			//Silkscreen, 81px, https://www.befunky.com/create/photo-editor/
-			BufferedImage startGameUnclickedImage = ImageIO.read(GameData.class.getResource("/img/buttons/startGameUnclicked.png"));
-			startGameUnselectedIcon = new ImageIcon(startGameUnclickedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
-			BufferedImage startGameClickedImage = ImageIO.read(GameData.class.getResource("/img/buttons/startGameClicked.png"));
-			startGameSelectedIcon = new ImageIcon(startGameClickedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage startGameUnselectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/startGameUnclicked.png"));
+			startGameUnselectedIcon = new ImageIcon(startGameUnselectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage startGameSelectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/startGameClicked.png"));
+			startGameSelectedIcon = new ImageIcon(startGameSelectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage settingsUnselectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/settingsUnclicked.png"));
+			settingsUnselectedIcon = new ImageIcon(settingsUnselectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage settingsSelectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/settingsClicked.png"));
+			settingsSelectedIcon = new ImageIcon(settingsSelectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage rulesUnselectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/rulesUnclicked.png"));
+			rulesUnselectedIcon = new ImageIcon(rulesUnselectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage rulesSelectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/rulesClicked.png"));
+			rulesSelectedIcon = new ImageIcon(rulesSelectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -63,15 +72,15 @@ public class GameData {
 	
 	private static void initCharacterSprites() {
 		try {
-			characterSprite = ImageIO.read(GameData.class.getResource("/img/characters/character.png"));
-			characterBackwardsRunningSprite = characterSprite.getSubimage(0, 0, 460, 590);
-			characterBackwardsStillSprite = characterSprite.getSubimage(470, 0, 460, 560);
-			characterForwardsRunningSprite = characterSprite.getSubimage(0, 1810, 460, 590); 
-			characterFowardsStillSprite = characterSprite.getSubimage(470, 1810, 460, 590);
-			characterRightRunningSprite = characterSprite.getSubimage(0, 600, 460, 590);
-			characterRightStillSprite = characterSprite.getSubimage(470, 600, 470, 590);
-			characterLeftRunningSprite = characterSprite.getSubimage(470, 1200, 460, 580);
-			characterLeftStillSprite = characterSprite.getSubimage(0, 1200, 460, 580);
+			characterSpriteSheet = ImageIO.read(GameData.class.getResource("/img/characters/character.png"));
+			characterBackwardsRunningSprite = characterSpriteSheet.getSubimage(0, 0, 460, 590);
+			characterBackwardsStillSprite = characterSpriteSheet.getSubimage(470, 0, 460, 560);
+			characterForwardsRunningSprite = characterSpriteSheet.getSubimage(0, 1810, 460, 590); 
+			characterFowardsStillSprite = characterSpriteSheet.getSubimage(470, 1810, 460, 590);
+			characterRightRunningSprite = characterSpriteSheet.getSubimage(0, 600, 460, 590);
+			characterRightStillSprite = characterSpriteSheet.getSubimage(470, 600, 470, 590);
+			characterLeftRunningSprite = characterSpriteSheet.getSubimage(470, 1200, 460, 580);
+			characterLeftStillSprite = characterSpriteSheet.getSubimage(0, 1200, 460, 580);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -116,6 +125,7 @@ public class GameData {
 	public enum GameState{
 		MENU,
 		SETTINGS,
+		RULES,
 		IN_GAME,
 		PAUSED
 	}

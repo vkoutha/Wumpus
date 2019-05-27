@@ -60,13 +60,15 @@ public class Tile {
 	}
 	
 	public void removeItem() {
+		item = ItemTypes.NONE;
 		itemSprite = null;
 	}
 	
 	private boolean isNextToPlayer() {
 		Player player = Game.game.getPlayer();
-		for (int r = player.getRow() - player.getFlashlightRadius(); r <= player.getRow() + player.getFlashlightRadius(); r++) {
-			for(int c = player.getColumn() - player.getFlashlightRadius(); c <= player.getColumn() + player.getFlashlightRadius(); c++) {
+		Toolbar toolbar = Game.game.getToolbar();
+		for (int r = player.getRow() - toolbar.getFlashlightRadius(); r <= player.getRow() + toolbar.getFlashlightRadius(); r++) {
+			for(int c = player.getColumn() - toolbar.getFlashlightRadius(); c <= player.getColumn() + toolbar.getFlashlightRadius(); c++) {
 				if (row == r && column == c) {
 					return true;
 				}
@@ -86,7 +88,7 @@ public class Tile {
 			g2.drawImage(itemSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		}
 		if(!isDiscovered) {
-			if(Game.game.getPlayer().getFlashlightRadius() > 0 && isNextToPlayer()) {
+			if(Game.game.getToolbar().getFlashlightRadius() > 0 && isNextToPlayer()) {
 				g2.setComposite(AlphaComposite.SrcOver.derive(GameData.FLASHLIGHT_BLOCK_OPACITY));
 			}
 			g2.drawImage(GameData.rockSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);

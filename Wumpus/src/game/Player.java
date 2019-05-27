@@ -9,7 +9,6 @@ import game.GameData.MovementDirections;
 public class Player {
 	
 	private int row, column;
-	private int flashlightRadius;
 	private GameData.MovementDirections movementDirection;
 	private BufferedImage spriteToUse;
 	
@@ -60,20 +59,12 @@ public class Player {
 		}
 	}
 	
-	public void addFlashlight() {
-		flashlightRadius++;
-	}
-	
 	public int getRow() {
 		return row;
 	}
 	
 	public int getColumn() {
 		return column;
-	}
-	
-	public int getFlashlightRadius() {
-		return flashlightRadius;
 	}
 	
 	public void render(Graphics g) {
