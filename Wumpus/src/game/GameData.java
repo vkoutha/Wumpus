@@ -4,6 +4,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,6 +30,8 @@ public class GameData {
 	
 	public static final float FLASHLIGHT_BLOCK_OPACITY = .7f;
 
+	public static AudioInputStream themeSong, battleSong;
+	
 	public static BufferedImage wumpusLogo, menuBackground, settingsMenuBackground;
 	public static BufferedImage rockSprite, grassSprite;
 	public static BufferedImage characterSpriteSheet, characterFowardsStillSprite, characterForwardsRunningSprite,
@@ -40,11 +44,21 @@ public class GameData {
 	public static ImageIcon explosionAnimation, losingAnimation, winningAnimation;
 	
 	static {
+		initMusic();
 		initMenuSprites();
 		initCharacterSprites();
 		initTileSprites();
 		initItemSprites();
 		initAnimations();
+	}
+	
+	private static void initMusic() {
+		try {
+			themeSong =  AudioSystem.getAudioInputStream(GameData.class.getResource("/sound/theme.wav"));
+			battleSong = AudioSystem.getAudioInputStream(GameData.class.getResource("/sound/battleMusic.wav"));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private static void initMenuSprites() {

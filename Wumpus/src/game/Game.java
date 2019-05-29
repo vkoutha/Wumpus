@@ -39,9 +39,8 @@ public class Game implements ActionListener, KeyListener {
 	private GameState gameState;
 	private JLabel explosionAnimation, losingAnimation, winningAnimation;
 	private JButton startGameButton, settingsMenuButton, rulesButton;
-	private AudioInputStream audioInputStream;
 	private Clip themePlayer;
-	private boolean explosionInProgress;
+	private boolean explosionInProgress, battleInProgress;
 
 	public Game() {
 		frame = new JFrame(GameData.FRAME_NAME);
@@ -59,13 +58,13 @@ public class Game implements ActionListener, KeyListener {
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initialize();
-		startMusic();
+		startMusic(GameData.themeSong, true);
+		gameState = GameState.MENU;
+		addButtons();
 		timer.start();
 	}
 
 	private void initialize() {
-		gameState = GameState.MENU;
-		addButtons();
 		tiles = new Tile[GameData.TILE_AMOUNT][GameData.TILE_AMOUNT];
 		for (int r = 0; r < tiles.length; r++) {
 			for (int c = 0; c < tiles[r].length; c++) {
@@ -189,18 +188,6 @@ public class Game implements ActionListener, KeyListener {
 				themePlayer.stop();
 				break;
 			case KeyEvent.VK_T:
-				frame.setResizable(false);
-				losingAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
-				renderer.add(losingAnimation);
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						long startTime = System.currentTimeMillis();
-						while(System.currentTimeMillis() - startTime < 20000);
-						renderer.remove(losingAnimation);
-						frame.setResizable(true);
-					}
-				}).start();
 				break;
 			case KeyEvent.VK_ESCAPE:
 				gameState = GameState.MENU;
@@ -247,13 +234,18 @@ public class Game implements ActionListener, KeyListener {
 		}
 	}
 
-	private void startMusic() { 
+	private void startMusic(AudioInputStream stream, boolean loop) { 
 		try {
+			if(themePlayer != null && themePlayer.isActive()) {
+				themePlayer.stop();
+				//themePlayer.close();
+			}
 			themePlayer = AudioSystem.getClip();
-			audioInputStream =  AudioSystem.getAudioInputStream(getClass().getResource("/sound/theme.wav"));
-			themePlayer.open(audioInputStream);
+			themePlayer.open(stream);
 			themePlayer.start();
-			themePlayer.loop(-1);
+			if(loop) {
+				themePlayer.loop(-1);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -262,10 +254,15 @@ public class Game implements ActionListener, KeyListener {
 
 	private void update() {
 		updateSize();
+		if(battleInProgress) {
+			themePlayer.stop();
+			startMusic(GameData.battleSong, false);
+			battleInProgress = false;
+		}
 	}
 
 	private void updateSize() {
-		if (frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE != GameData.FRAME_WIDTH
+		if (frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE != GameData.FRAME_EXTENDED_WIDTH
 				|| frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE != GameData.FRAME_HEIGHT) {
 			renderer.setPreferredSize(new Dimension(frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE,
 					frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE));
@@ -283,6 +280,7 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	public void explodeTile(int row, int column) {
+		frame.setResizable(false);
 		explosionInProgress = true;
 		explosionAnimation.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
 		renderer.add(explosionAnimation);
@@ -290,14 +288,51 @@ public class Game implements ActionListener, KeyListener {
 			@Override
 			public void run() {
 				long startTime = System.currentTimeMillis();
-				while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS);
+				while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS) {
+				}
 				renderer.remove(explosionAnimation);
 				explosionInProgress = false;
+				frame.setResizable(true);
 			}
 		}).start();
 		toolbar.removeItem(ItemTypes.EXPLOSIVE);
 		tiles[row][column].setDiscovered(true);
 		tiles[row][column].setItem(ItemTypes.NONE);
+	}
+	
+	public void setWinner(boolean playerWon) {
+		battleInProgress = true;
+		if(playerWon) {
+			frame.setResizable(false);
+			winningAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+			renderer.add(winningAnimation);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					long startTime = System.currentTimeMillis();
+					while(System.currentTimeMillis() - startTime < 15000) {
+					}
+					renderer.remove(winningAnimation);
+					frame.setResizable(true);
+					initialize();
+				}
+			}).start();
+		}else {
+			frame.setResizable(false);
+			losingAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+			renderer.add(losingAnimation);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					long startTime = System.currentTimeMillis();
+					while(System.currentTimeMillis() - startTime < 15000) {
+					}
+					renderer.remove(losingAnimation);
+					frame.setResizable(true);
+					initialize();
+				}
+			}).start();
+		}
 	}
 	
 	@Override

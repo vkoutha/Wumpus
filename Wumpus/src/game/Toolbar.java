@@ -10,7 +10,7 @@ import game.GameData.ItemTypes;
 public class Toolbar {
 
 	
-	private int flashlightCount, compassCount, explosiveCount, goldCount;
+	private int flashlightCount, compassCount, explosiveCount, goldCount, swordCount;
 	private ArrayList<ItemTypes> items;
 	public Toolbar() {
 		items = new ArrayList<ItemTypes>();
@@ -39,7 +39,15 @@ public class Toolbar {
 			goldCount++;
 		}else if (item == ItemTypes.SWORD) {
 			items.add(ItemTypes.SWORD);
+			swordCount++;
 		}
+	}
+	
+	public boolean weaponAvailable() {
+		if(swordCount > 0) {
+			return true;
+		}
+		return false;
 	}
 	
 	public void removeItem(ItemTypes item) {
@@ -105,7 +113,6 @@ public class Toolbar {
 				g.drawString("x" + explosiveCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case SWORD:
-				System.out.println("DRAWING");
 				g.drawImage(GameData.swordSprite, GameData.FRAME_WIDTH, i * GameData.TOOLBAR_SLOT_HEIGHT, 
 						GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_WIDTH, GameData.TOOLBAR_SLOT_HEIGHT, null);
 				g.drawString("x1", GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);

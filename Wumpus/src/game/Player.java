@@ -45,12 +45,33 @@ public class Player {
 			}
 		}
 		Tile.updateAffectedTiles();
+		if(row == Game.game.getWumpus().getRow() && column == Game.game.getWumpus().getColumn()) {
+			battleWumpus();
+		}
 		if(prevRow != row || prevCol != column) {
 			Game.game.getWumpus().move();
 		}
 		Game.game.getTiles()[row][column].setDiscovered(true);
 		movementDirection = direction;
 	}
+	
+	private void battleWumpus() {
+		double chance = (Math.random()*100);
+		if(Game.game.getToolbar().weaponAvailable()) {
+			if(chance <= 80) {
+				Game.game.setWinner(true);
+			}else {
+				Game.game.setWinner(false);
+			}
+		}else {
+			if(chance <= 20) {
+				Game.game.setWinner(true);
+			}else {
+				Game.game.setWinner(false);
+			}
+		}
+	}
+	
 	
 	public void shoot() {
 		if(movementDirection == MovementDirections.UP && row > 0) {
@@ -62,10 +83,6 @@ public class Player {
 		}else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
 			Game.game.explodeTile(row, column+1);
 		}
-	}
-	
-	private void battleWumpus() {
-		
 	}
 	
 	public int getRow() {

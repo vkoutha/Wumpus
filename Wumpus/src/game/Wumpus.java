@@ -45,11 +45,26 @@ public class Wumpus {
 			}
 			column += movement;
 		}
-		System.out.println("Row: " + row + "\tColumn: " + column);
+		if(row == Game.game.getPlayer().getRow() && column == Game.game.getPlayer().getColumn()) {
+			battlePlayer();
+		}
 	}
 	
 	private void battlePlayer() {
-		
+		double chance = (Math.random()*100);
+		if(Game.game.getToolbar().weaponAvailable()) {
+			if(chance <= 65) {
+				Game.game.setWinner(true);
+			}else {
+				Game.game.setWinner(false);
+			}
+		}else {
+			if(chance <= 5) {
+				Game.game.setWinner(true);
+			}else {
+				Game.game.setWinner(false);
+			}
+		}
 	}
 	
 	public int getRow() {
