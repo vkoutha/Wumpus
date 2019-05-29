@@ -23,27 +23,28 @@ public class GameData {
 	public static int TILE_WIDTH = (FRAME_WIDTH/TILE_AMOUNT);
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/TILE_AMOUNT);
 	
-	public static final int TOOLBAR_SLOTS = 4;
+	public static final int TOOLBAR_SLOTS = 5;
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
 	
-	public static final float FLASHLIGHT_BLOCK_OPACITY = .85f;
+	public static final float FLASHLIGHT_BLOCK_OPACITY = .7f;
 
 	public static BufferedImage wumpusLogo, menuBackground, settingsMenuBackground;
 	public static BufferedImage rockSprite, grassSprite;
 	public static BufferedImage characterSpriteSheet, characterFowardsStillSprite, characterForwardsRunningSprite,
 			characterBackwardsStillSprite, characterBackwardsRunningSprite, characterLeftStillSprite, characterLeftRunningSprite,
-			characterRightStillSprite, characterRightRunningSprite;
-	public static BufferedImage flashlightSprite, compassSprite, goldSprite, explosiveSprite;
+			characterRightStillSprite, characterRightRunningSprite, wumpusSprite;
+	public static BufferedImage flashlightSprite, compassSprite, goldSprite, explosiveSprite, swordSprite;
 	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
 			rulesSelectedIcon;
-	private static Image explosionAnimationImage;
-	public static ImageIcon explosionAnimation;
+	private static Image explosionAnimationImage, losingAnimationImage, winningAnimationImage;
+	public static ImageIcon explosionAnimation, losingAnimation, winningAnimation;
 	
 	static {
 		initMenuSprites();
 		initCharacterSprites();
 		initTileSprites();
 		initItemSprites();
+		initAnimations();
 	}
 	
 	private static void initMenuSprites() {
@@ -81,6 +82,7 @@ public class GameData {
 			characterRightStillSprite = characterSpriteSheet.getSubimage(470, 600, 470, 590);
 			characterLeftRunningSprite = characterSpriteSheet.getSubimage(470, 1200, 460, 580);
 			characterLeftStillSprite = characterSpriteSheet.getSubimage(0, 1200, 460, 580);
+			wumpusSprite = ImageIO.read(GameData.class.getResource("/img/characters/wumpusSprite.png"));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -92,12 +94,21 @@ public class GameData {
 			rockSprite = rockSprite.getSubimage(10, 10, rockSprite.getWidth()-20, rockSprite.getHeight()-20);
 			grassSprite = ImageIO.read(GameData.class.getResource("/img/tiles/grassTile.jpg"));
 			grassSprite = grassSprite.getSubimage(50, 50, grassSprite.getWidth()-70, grassSprite.getHeight()-80);
-			explosionAnimation = new ImageIcon(GameData.class.getResource("/img/animations/explosionGIF.gif"));
-			explosionAnimationImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
-			explosionAnimation = new ImageIcon(explosionAnimationImage);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static void initAnimations() {
+		explosionAnimation = new ImageIcon(GameData.class.getResource("/img/animations/explosionAnimation.gif"));
+		explosionAnimationImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
+		explosionAnimation = new ImageIcon(explosionAnimationImage);
+		losingAnimation = new ImageIcon(GameData.class.getResource("/img/animations/losingAnimation.gif"));
+		losingAnimationImage = losingAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
+		losingAnimation = new ImageIcon(losingAnimationImage);
+		winningAnimation = new ImageIcon(GameData.class.getResource("/img/animations/winningAnimation.gif"));
+		winningAnimationImage = winningAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
+		winningAnimation = new ImageIcon(winningAnimationImage);
 	}
 	
 	private static void initItemSprites() {
@@ -106,6 +117,7 @@ public class GameData {
 			compassSprite = ImageIO.read(GameData.class.getResource("/img/items/compassSprite.gif"));
 			goldSprite = ImageIO.read(GameData.class.getResource("/img/items/goldSprite.png"));
 			explosiveSprite = ImageIO.read(GameData.class.getResource("/img/items/explosiveSprite.png"));
+			swordSprite = ImageIO.read(GameData.class.getResource("/img/items/swordSprite.png"));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -120,6 +132,14 @@ public class GameData {
 	public static void rescaleAnimations() {
 		explosionAnimationImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
 		explosionAnimation = new ImageIcon(explosionAnimationImage);
+		
+		losingAnimation = new ImageIcon(GameData.class.getResource("/img/animations/losingAnimation.gif"));
+		losingAnimationImage = losingAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
+		losingAnimation = new ImageIcon(losingAnimationImage);
+		winningAnimation = new ImageIcon(GameData.class.getResource("/img/animations/winningAnimation.gif"));
+		winningAnimationImage = winningAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
+		winningAnimation = new ImageIcon(winningAnimationImage);
+		
 	}
 	
 	public enum GameState{
@@ -142,6 +162,7 @@ public class GameData {
 		COMPASS,
 		GOLD,
 		EXPLOSIVE,
+		SWORD,
 		NONE
 	}
 

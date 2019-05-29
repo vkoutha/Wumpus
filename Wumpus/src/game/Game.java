@@ -34,9 +34,10 @@ public class Game implements ActionListener, KeyListener {
 	private Renderer renderer;
 	private Tile[][] tiles;
 	private Player player;
+	private Wumpus wumpus;
 	private Toolbar toolbar;
 	private GameState gameState;
-	private JLabel explosionGIF;
+	private JLabel explosionAnimation, losingAnimation, winningAnimation;
 	private JButton startGameButton, settingsMenuButton, rulesButton;
 	private AudioInputStream audioInputStream;
 	private Clip themePlayer;
@@ -44,7 +45,6 @@ public class Game implements ActionListener, KeyListener {
 
 	public Game() {
 		frame = new JFrame(GameData.FRAME_NAME);
-		explosionGIF = new JLabel();
 		timer = new Timer(GameData.UPDATE_SPEED_MS, this);
 		renderer = new Renderer();
 		renderer.setPreferredSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
@@ -74,20 +74,23 @@ public class Game implements ActionListener, KeyListener {
 		}
 		tiles[0][0].setDiscovered(true);
 		player = new Player();
+		wumpus = new Wumpus();
 		toolbar = new Toolbar();
 		initItems();
-		explosionGIF = new JLabel(GameData.explosionAnimation);
-		explosionGIF.setBounds(500, 500, 100, 100);
-		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_WIDTH;
+		explosionAnimation = new JLabel(GameData.explosionAnimation);
+		losingAnimation = new JLabel(GameData.losingAnimation);
+		winningAnimation = new JLabel(GameData.winningAnimation);
+		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_EXTENDED_WIDTH;
 		GameData.FRAME_HEIGHT_DIFFERENCE = frame.getHeight() - GameData.FRAME_HEIGHT;
 	}
-	
+
 	private void initItems() {
 		toolbar.addItem(ItemTypes.EXPLOSIVE);
 		toolbar.addItem(ItemTypes.EXPLOSIVE);
 		toolbar.addItem(ItemTypes.EXPLOSIVE);
 		tiles[5][4].setItem(ItemTypes.FLASHLIGHT);
 		tiles[3][3].setItem(ItemTypes.GOLD);
+		tiles[6][5].setItem(ItemTypes.SWORD);
 	}
 	
 	private void addButtons() {
@@ -171,20 +174,33 @@ public class Game implements ActionListener, KeyListener {
 				player.move(GameData.MovementDirections.DOWN);
 				break;
 			case KeyEvent.VK_SPACE:
-				System.out.println("CLICKING");
 				if(!explosionInProgress) {
 					player.shoot();
-					toolbar.removeItem(ItemTypes.EXPLOSIVE);
 				}
 				break;
 			case KeyEvent.VK_A:
 				if(tiles[player.getRow()][player.getColumn()].getItem() != ItemTypes.NONE) {
 					toolbar.addItem(tiles[player.getRow()][player.getColumn()].getItem());
+					Tile.updateAffectedTiles();
 					tiles[player.getRow()][player.getColumn()].removeItem();
 				}
 				break;
 			case KeyEvent.VK_M:
 				themePlayer.stop();
+				break;
+			case KeyEvent.VK_T:
+				frame.setResizable(false);
+				losingAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+				renderer.add(losingAnimation);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						long startTime = System.currentTimeMillis();
+						while(System.currentTimeMillis() - startTime < 20000);
+						renderer.remove(losingAnimation);
+						frame.setResizable(true);
+					}
+				}).start();
 				break;
 			case KeyEvent.VK_ESCAPE:
 				gameState = GameState.MENU;
@@ -253,31 +269,33 @@ public class Game implements ActionListener, KeyListener {
 				|| frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE != GameData.FRAME_HEIGHT) {
 			renderer.setPreferredSize(new Dimension(frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE,
 					frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE));
-			GameData.FRAME_WIDTH = (int) frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE;
+			GameData.FRAME_EXTENDED_WIDTH = (int) frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE;
+			GameData.FRAME_WIDTH = GameData.FRAME_EXTENDED_WIDTH - 140;
 			GameData.FRAME_HEIGHT = (int) frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE;
 			GameData.TILE_WIDTH = GameData.FRAME_WIDTH / GameData.TILE_AMOUNT;
 			GameData.TILE_HEIGHT = GameData.FRAME_HEIGHT / GameData.TILE_AMOUNT;
-			GameData.FRAME_EXTENDED_WIDTH = GameData.FRAME_WIDTH + 140;
 			GameData.TOOLBAR_SLOT_HEIGHT = GameData.FRAME_HEIGHT/GameData.TOOLBAR_SLOTS;
 			GameData.rescaleAnimations();
-			renderer.remove(explosionGIF);
-			explosionGIF = new JLabel(GameData.explosionAnimation);
+			explosionAnimation = new JLabel(GameData.explosionAnimation);
+			losingAnimation = new JLabel(GameData.losingAnimation);
+			winningAnimation = new JLabel(GameData.winningAnimation);
 		}
 	}
 	
 	public void explodeTile(int row, int column) {
 		explosionInProgress = true;
-		explosionGIF.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
-		renderer.add(explosionGIF);
+		explosionAnimation.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
+		renderer.add(explosionAnimation);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				long startTime = System.currentTimeMillis();
 				while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS);
-				renderer.remove(explosionGIF);
+				renderer.remove(explosionAnimation);
 				explosionInProgress = false;
 			}
 		}).start();
+		toolbar.removeItem(ItemTypes.EXPLOSIVE);
 		tiles[row][column].setDiscovered(true);
 		tiles[row][column].setItem(ItemTypes.NONE);
 	}
@@ -294,6 +312,10 @@ public class Game implements ActionListener, KeyListener {
 	
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public Wumpus getWumpus() {
+		return wumpus;
 	}
 	
 	public Toolbar getToolbar() {

@@ -18,6 +18,7 @@ public class Player {
 	}
 	
 	public void move(MovementDirections direction) {
+		int prevRow = row, prevCol = column;
 		if(direction == MovementDirections.UP && row > 0) {
 			spriteToUse = GameData.characterFowardsStillSprite;
 			if(movementDirection == direction) {
@@ -43,6 +44,10 @@ public class Player {
 				column++;
 			}
 		}
+		Tile.updateAffectedTiles();
+		if(prevRow != row || prevCol != column) {
+			Game.game.getWumpus().move();
+		}
 		Game.game.getTiles()[row][column].setDiscovered(true);
 		movementDirection = direction;
 	}
@@ -57,6 +62,10 @@ public class Player {
 		}else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
 			Game.game.explodeTile(row, column+1);
 		}
+	}
+	
+	private void battleWumpus() {
+		
 	}
 	
 	public int getRow() {

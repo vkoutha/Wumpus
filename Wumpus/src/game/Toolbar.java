@@ -29,7 +29,6 @@ public class Toolbar {
 			compassCount++;
 		}else if (item == ItemTypes.EXPLOSIVE) {
 			if(explosiveCount == 0) {
-				System.out.println("ADDED EXPLOSIVE");
 				items.add(ItemTypes.EXPLOSIVE);
 			}
 			explosiveCount++;
@@ -38,6 +37,8 @@ public class Toolbar {
 				items.add(ItemTypes.GOLD);
 			}
 			goldCount++;
+		}else if (item == ItemTypes.SWORD) {
+			items.add(ItemTypes.SWORD);
 		}
 	}
 	
@@ -74,8 +75,7 @@ public class Toolbar {
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(GameData.FRAME_WIDTH, 0, GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_WIDTH, GameData.FRAME_HEIGHT);
 		g.setColor(Color.BLACK);
-		//System.out.println(items.size());
-		for(int i = 0; i < 4; i++) {
+		for(int i = 0; i < GameData.TOOLBAR_SLOTS; i++) {
 			g.drawLine(GameData.FRAME_WIDTH, i * GameData.TOOLBAR_SLOT_HEIGHT, GameData.FRAME_EXTENDED_WIDTH, i * GameData.TOOLBAR_SLOT_HEIGHT);
 		}
 		for(int i = 0; i < items.size(); i++) {
@@ -90,7 +90,7 @@ public class Toolbar {
 				g.drawImage(GameData.compassSprite, GameData.FRAME_WIDTH, i * GameData.TOOLBAR_SLOT_HEIGHT, 
 						GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_WIDTH, GameData.TOOLBAR_SLOT_HEIGHT, null);
 				//g.setFont(new Font("Arial", 15, Font.BOLD));
-				g.drawString("x" + compassCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
+				g.drawString("Uses: " + compassCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case GOLD:
 				g.drawImage(GameData.goldSprite, GameData.FRAME_WIDTH, i * GameData.TOOLBAR_SLOT_HEIGHT, 
@@ -103,6 +103,12 @@ public class Toolbar {
 						GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_WIDTH, GameData.TOOLBAR_SLOT_HEIGHT, null);
 				//g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("x" + explosiveCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
+				break;
+			case SWORD:
+				System.out.println("DRAWING");
+				g.drawImage(GameData.swordSprite, GameData.FRAME_WIDTH, i * GameData.TOOLBAR_SLOT_HEIGHT, 
+						GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_WIDTH, GameData.TOOLBAR_SLOT_HEIGHT, null);
+				g.drawString("x1", GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case NONE:
 				break;

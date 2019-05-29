@@ -12,7 +12,7 @@ public class Tile {
 	
 	private int row;
 	private int column;
-	private boolean isDiscovered;
+	private boolean isDiscovered, isFlashlightAffected;
 	private ItemTypes item;
 	private BufferedImage itemSprite;
 	
@@ -34,8 +34,30 @@ public class Tile {
 		return item;
 	}
 	
+	public boolean isDiscovered() {
+		return isDiscovered;
+	}
+	
+	public boolean hasPlayer() {
+		if(row == Game.game.getPlayer().getRow() && column == Game.game.getPlayer().getColumn()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean hasWumpus() {
+		if(row == Game.game.getWumpus().getRow() && column == Game.game.getWumpus().getColumn()) {
+			return true;
+		}
+		return false;
+	}
+	
 	public void setDiscovered(boolean discovered) {
 		isDiscovered = discovered;
+	}
+	
+	public void setFlashlightAffected(boolean affected) {
+		isFlashlightAffected = affected;
 	}
 	
 	public void setItem(ItemTypes item) {
@@ -53,6 +75,9 @@ public class Tile {
 		case EXPLOSIVE:
 			itemSprite = GameData.explosiveSprite;
 			break;
+		case SWORD:
+			itemSprite = GameData.swordSprite;
+			break;
 		case NONE:
 			itemSprite = null;
 			break;
@@ -64,7 +89,19 @@ public class Tile {
 		itemSprite = null;
 	}
 	
-	private boolean isNextToPlayer() {
+	public static void updateAffectedTiles() {
+		for(Tile[] tileArr : Game.game.getTiles()) {
+			for(Tile tile : tileArr) {
+				if(tile.isFlashlightAffected()) {
+					tile.setFlashlightAffected(true);
+				}else{
+					tile.setFlashlightAffected(false);
+				}
+			}
+		}
+	}
+	
+	public boolean isFlashlightAffected() {
 		Player player = Game.game.getPlayer();
 		Toolbar toolbar = Game.game.getToolbar();
 		for (int r = player.getRow() - toolbar.getFlashlightRadius(); r <= player.getRow() + toolbar.getFlashlightRadius(); r++) {
@@ -87,8 +124,11 @@ public class Tile {
 		if(item != ItemTypes.NONE) {
 			g2.drawImage(itemSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		}
+		if(row == Game.game.getWumpus().getRow() && column == Game.game.getWumpus().getColumn()) {
+			g2.drawImage(GameData.wumpusSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+		}
 		if(!isDiscovered) {
-			if(Game.game.getToolbar().getFlashlightRadius() > 0 && isNextToPlayer()) {
+			if(Game.game.getToolbar().getFlashlightRadius() > 0 && isFlashlightAffected) {
 				g2.setComposite(AlphaComposite.SrcOver.derive(GameData.FLASHLIGHT_BLOCK_OPACITY));
 			}
 			g2.drawImage(GameData.rockSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
