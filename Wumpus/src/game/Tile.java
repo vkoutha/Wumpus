@@ -38,20 +38,6 @@ public class Tile {
 		return isDiscovered;
 	}
 	
-	public boolean hasPlayer() {
-		if(row == Game.game.getPlayer().getRow() && column == Game.game.getPlayer().getColumn()) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean hasWumpus() {
-		if(row == Game.game.getWumpus().getRow() && column == Game.game.getWumpus().getColumn()) {
-			return true;
-		}
-		return false;
-	}
-	
 	public void setDiscovered(boolean discovered) {
 		isDiscovered = discovered;
 	}
@@ -102,10 +88,8 @@ public class Tile {
 	}
 	
 	public boolean isFlashlightAffected() {
-		Player player = Game.game.getPlayer();
-		Toolbar toolbar = Game.game.getToolbar();
-		for (int r = player.getRow() - toolbar.getFlashlightRadius(); r <= player.getRow() + toolbar.getFlashlightRadius(); r++) {
-			for(int c = player.getColumn() - toolbar.getFlashlightRadius(); c <= player.getColumn() + toolbar.getFlashlightRadius(); c++) {
+		for (int r = Player.getRow() - Toolbar.getFlashlightRadius(); r <= Player.getRow() + Toolbar.getFlashlightRadius(); r++) {
+			for(int c = Player.getColumn() - Toolbar.getFlashlightRadius(); c <= Player.getColumn() + Toolbar.getFlashlightRadius(); c++) {
 				if (row == r && column == c) {
 					return true;
 				}
@@ -124,11 +108,11 @@ public class Tile {
 		if(item != ItemTypes.NONE) {
 			g2.drawImage(itemSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		}
-		if(row == Game.game.getWumpus().getRow() && column == Game.game.getWumpus().getColumn()) {
+		if(row == Wumpus.getRow() && column == Wumpus.getColumn()) {
 			g2.drawImage(GameData.wumpusSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		}
 		if(!isDiscovered) {
-			if(Game.game.getToolbar().getFlashlightRadius() > 0 && isFlashlightAffected) {
+			if(Toolbar.getFlashlightRadius() > 0 && isFlashlightAffected) {
 				g2.setComposite(AlphaComposite.SrcOver.derive(GameData.FLASHLIGHT_BLOCK_OPACITY));
 			}
 			g2.drawImage(GameData.rockSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);

@@ -18,12 +18,16 @@ public class GameData {
 	public static int FRAME_HEIGHT = 800;
 	public static int FRAME_WIDTH_DIFFERENCE = 0;
 	public static int FRAME_HEIGHT_DIFFERENCE = 0;
-	public static final int UPDATE_SPEED_MS = 20;
+	public static final int UPDATE_SPEED_MS = 30;
 	public static final int EXPLOSION_ANIMATION_TIME_MS = 1500;
+	
+	public static final int VERTICAL_DISTANCE_BETWEEN_BUTTONS = 20;
 	
 	public static final int TILE_AMOUNT = 10;
 	public static int TILE_WIDTH = (FRAME_WIDTH/TILE_AMOUNT);
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/TILE_AMOUNT);
+	
+	public static final int PLAYER_VELOCITY = 4;
 	
 	public static final int TOOLBAR_SLOTS = 5;
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
@@ -34,9 +38,8 @@ public class GameData {
 	
 	public static BufferedImage wumpusLogo, menuBackground, settingsMenuBackground;
 	public static BufferedImage rockSprite, grassSprite;
-	public static BufferedImage characterSpriteSheet, characterFowardsStillSprite, characterForwardsRunningSprite,
-			characterBackwardsStillSprite, characterBackwardsRunningSprite, characterLeftStillSprite, characterLeftRunningSprite,
-			characterRightStillSprite, characterRightRunningSprite, wumpusSprite;
+	public static BufferedImage characterSpriteSheet, wumpusSprite;
+	public static BufferedImage[] characterBackwardsSprite, characterForwardsSprite, characterLeftSprite, characterRightSprite;
 	public static BufferedImage flashlightSprite, compassSprite, goldSprite, explosiveSprite, swordSprite;
 	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
 			rulesSelectedIcon;
@@ -88,14 +91,30 @@ public class GameData {
 	private static void initCharacterSprites() {
 		try {
 			characterSpriteSheet = ImageIO.read(GameData.class.getResource("/img/characters/character.png"));
-			characterBackwardsRunningSprite = characterSpriteSheet.getSubimage(0, 0, 460, 590);
-			characterBackwardsStillSprite = characterSpriteSheet.getSubimage(470, 0, 460, 560);
-			characterForwardsRunningSprite = characterSpriteSheet.getSubimage(0, 1810, 460, 590); 
-			characterFowardsStillSprite = characterSpriteSheet.getSubimage(470, 1810, 460, 590);
-			characterRightRunningSprite = characterSpriteSheet.getSubimage(0, 600, 460, 590);
-			characterRightStillSprite = characterSpriteSheet.getSubimage(470, 600, 470, 590);
-			characterLeftRunningSprite = characterSpriteSheet.getSubimage(470, 1200, 460, 580);
-			characterLeftStillSprite = characterSpriteSheet.getSubimage(0, 1200, 460, 580);
+		
+			characterBackwardsSprite = new BufferedImage[4];
+			characterBackwardsSprite[0] = characterSpriteSheet.getSubimage(448, 0, 480, 560);
+			characterBackwardsSprite[1] = characterSpriteSheet.getSubimage(944, 32, 432, 528);
+			characterBackwardsSprite[2] = characterSpriteSheet.getSubimage(1376, 0, 448, 560);
+			characterBackwardsSprite[3] = characterSpriteSheet.getSubimage(0, 32, 432, 528);
+			
+			characterForwardsSprite = new BufferedImage[4];
+			characterForwardsSprite[0] = characterSpriteSheet.getSubimage(448, 1856, 480, 544);
+			characterForwardsSprite[1] = characterSpriteSheet.getSubimage(944, 1856, 432, 544);
+			characterForwardsSprite[2] = characterSpriteSheet.getSubimage(1376, 1856, 448, 544);
+			characterForwardsSprite[3] = characterSpriteSheet.getSubimage(0, 1856, 432, 544);
+			
+			characterRightSprite = new BufferedImage[4];
+			characterRightSprite[0] = characterSpriteSheet.getSubimage(448, 576, 464, 608);
+			characterRightSprite[1] = characterSpriteSheet.getSubimage(944, 576, 384, 608);
+			characterRightSprite[2] = characterSpriteSheet.getSubimage(1360, 576, 420, 608);
+			characterRightSprite[3] = characterSpriteSheet.getSubimage(16, 576, 400, 608);
+			
+			characterLeftSprite = new BufferedImage[4];
+			characterLeftSprite[0] = characterSpriteSheet.getSubimage(0, 1200, 416, 608);
+			characterLeftSprite[1] = characterSpriteSheet.getSubimage(448, 1200, 464, 608);
+			characterLeftSprite[2] = characterSpriteSheet.getSubimage(944, 1200, 384, 608);
+			characterLeftSprite[3] = characterSpriteSheet.getSubimage(1360, 1200, 400, 608);
 			wumpusSprite = ImageIO.read(GameData.class.getResource("/img/characters/wumpusSprite.png"));
 		}catch(Exception e) {
 			e.printStackTrace();

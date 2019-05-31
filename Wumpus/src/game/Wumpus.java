@@ -4,16 +4,16 @@ import java.awt.Graphics;
 
 public class Wumpus {
 	
-	private int row, column;
+	private static int row, column;
 	
-	public Wumpus() {
+	static {
 		do {
-		row = (int) (Math.random() * GameData.TILE_AMOUNT);
-		column = (int) (Math.random() * GameData.TILE_AMOUNT);
+			row = (int) (Math.random() * GameData.TILE_AMOUNT);
+			column = (int) (Math.random() * GameData.TILE_AMOUNT);
 		}while(row == 0 && column == 0);
 	}
 	
-	public void move() {
+	public static void move() {
 		int rowVColumn = (int) (Math.random()*2);
 		int movement;
 		if(rowVColumn == 0) {
@@ -45,14 +45,14 @@ public class Wumpus {
 			}
 			column += movement;
 		}
-		if(row == Game.game.getPlayer().getRow() && column == Game.game.getPlayer().getColumn()) {
+		if(row == Player.getRow() && column == Player.getColumn()) {
 			battlePlayer();
 		}
 	}
 	
-	private void battlePlayer() {
+	private static void battlePlayer() {
 		double chance = (Math.random()*100);
-		if(Game.game.getToolbar().weaponAvailable()) {
+		if(Toolbar.weaponAvailable()) {
 			if(chance <= 65) {
 				Game.game.setWinner(true);
 			}else {
@@ -67,11 +67,11 @@ public class Wumpus {
 		}
 	}
 	
-	public int getRow() {
+	public static int getRow() {
 		return row;
 	}
 	
-	public int getColumn() {
+	public static int getColumn() {
 		return column;
 	}
 	
@@ -79,7 +79,7 @@ public class Wumpus {
 	 * Not used in order to account for needed layering on tile
 	 * @param g
 	 */
-	public void render(Graphics g) {
+	public static void render(Graphics g) {
 		g.drawImage(GameData.wumpusSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 	}
 

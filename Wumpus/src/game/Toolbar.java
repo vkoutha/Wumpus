@@ -10,13 +10,10 @@ import game.GameData.ItemTypes;
 public class Toolbar {
 
 	
-	private int flashlightCount, compassCount, explosiveCount, goldCount, swordCount;
-	private ArrayList<ItemTypes> items;
-	public Toolbar() {
-		items = new ArrayList<ItemTypes>();
-	}
+	private static int flashlightCount, compassCount, explosiveCount, goldCount, swordCount;
+	private static ArrayList<ItemTypes> items = new ArrayList<ItemTypes>();
 	
-	public void addItem(ItemTypes item) {
+	public static void addItem(ItemTypes item) {
 		if(item == ItemTypes.FLASHLIGHT) {
 			if(flashlightCount == 0) {
 				items.add(ItemTypes.FLASHLIGHT);
@@ -43,14 +40,14 @@ public class Toolbar {
 		}
 	}
 	
-	public boolean weaponAvailable() {
+	public static boolean weaponAvailable() {
 		if(swordCount > 0) {
 			return true;
 		}
 		return false;
 	}
 	
-	public void removeItem(ItemTypes item) {
+	public static void removeItem(ItemTypes item) {
 		if(item == ItemTypes.FLASHLIGHT) {
 			flashlightCount--;
 			if(flashlightCount == 0) {
@@ -75,11 +72,11 @@ public class Toolbar {
 		}
 	}
 	
-	public int getFlashlightRadius() {
+	public static int getFlashlightRadius() {
 		return flashlightCount;
 	}
 	
-	public void render(Graphics g) {
+	public static void render(Graphics g) {
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(GameData.FRAME_WIDTH, 0, GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_WIDTH, GameData.FRAME_HEIGHT);
 		g.setColor(Color.BLACK);

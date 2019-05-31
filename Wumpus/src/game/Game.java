@@ -72,9 +72,6 @@ public class Game implements ActionListener, KeyListener {
 			}
 		}
 		tiles[0][0].setDiscovered(true);
-		player = new Player();
-		wumpus = new Wumpus();
-		toolbar = new Toolbar();
 		initItems();
 		explosionAnimation = new JLabel(GameData.explosionAnimation);
 		losingAnimation = new JLabel(GameData.losingAnimation);
@@ -84,9 +81,9 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	private void initItems() {
-		toolbar.addItem(ItemTypes.EXPLOSIVE);
-		toolbar.addItem(ItemTypes.EXPLOSIVE);
-		toolbar.addItem(ItemTypes.EXPLOSIVE);
+		Toolbar.addItem(ItemTypes.EXPLOSIVE);
+		Toolbar.addItem(ItemTypes.EXPLOSIVE);
+		Toolbar.addItem(ItemTypes.EXPLOSIVE);
 		tiles[5][4].setItem(ItemTypes.FLASHLIGHT);
 		tiles[3][3].setItem(ItemTypes.GOLD);
 		tiles[6][5].setItem(ItemTypes.SWORD);
@@ -122,7 +119,7 @@ public class Game implements ActionListener, KeyListener {
 			}
 		});
 		settingsMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		renderer.add(Box.createVerticalStrut(20));
+		renderer.add(Box.createVerticalStrut(GameData.VERTICAL_DISTANCE_BETWEEN_BUTTONS));
 		renderer.add(settingsMenuButton);
 		
 		rulesButton = new JButton(GameData.rulesUnselectedIcon);
@@ -138,7 +135,7 @@ public class Game implements ActionListener, KeyListener {
 			}
 		});
 		rulesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		renderer.add(Box.createVerticalStrut(20));
+		renderer.add(Box.createVerticalStrut(GameData.VERTICAL_DISTANCE_BETWEEN_BUTTONS));
 		renderer.add(rulesButton);
 	}
 	
@@ -161,27 +158,27 @@ public class Game implements ActionListener, KeyListener {
 		case IN_GAME:
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_LEFT:
-				player.move(GameData.MovementDirections.LEFT);
+				Player.move(GameData.MovementDirections.LEFT);
 				break;
 			case KeyEvent.VK_RIGHT:
-				player.move(GameData.MovementDirections.RIGHT);
+				Player.move(GameData.MovementDirections.RIGHT);
 				break;
 			case KeyEvent.VK_UP:
-				player.move(GameData.MovementDirections.UP);
+				Player.move(GameData.MovementDirections.UP);
 				break;
 			case KeyEvent.VK_DOWN:
-				player.move(GameData.MovementDirections.DOWN);
+				Player.move(GameData.MovementDirections.DOWN);
 				break;
 			case KeyEvent.VK_SPACE:
 				if(!explosionInProgress) {
-					player.shoot();
+					Player.shoot();
 				}
 				break;
 			case KeyEvent.VK_A:
-				if(tiles[player.getRow()][player.getColumn()].getItem() != ItemTypes.NONE) {
-					toolbar.addItem(tiles[player.getRow()][player.getColumn()].getItem());
+				if(tiles[Player.getRow()][Player.getColumn()].getItem() != ItemTypes.NONE) {
+					Toolbar.addItem(tiles[Player.getRow()][Player.getColumn()].getItem());
 					Tile.updateAffectedTiles();
-					tiles[player.getRow()][player.getColumn()].removeItem();
+					tiles[Player.getRow()][Player.getColumn()].removeItem();
 				}
 				break;
 			case KeyEvent.VK_M:
@@ -225,8 +222,8 @@ public class Game implements ActionListener, KeyListener {
 			for (Tile[] tileArr : tiles)
 				for (Tile tile : tileArr)
 					tile.render(g);
-			player.render(g);
-			toolbar.render(g);
+			Player.render(g);
+			Toolbar.render(g);
 			g.setColor(Color.WHITE);
 			break;
 		case PAUSED:
@@ -235,30 +232,25 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	private void startMusic(AudioInputStream stream, boolean loop) { 
-		try {
-			if(themePlayer != null && themePlayer.isActive()) {
-				themePlayer.stop();
-				//themePlayer.close();
-			}
-			themePlayer = AudioSystem.getClip();
-			themePlayer.open(stream);
-			themePlayer.start();
-			if(loop) {
-				themePlayer.loop(-1);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			if(themePlayer != null && themePlayer.getMicrosecondPosition() > 0) {
+//				themePlayer.stop();
+//			}
+//			themePlayer = AudioSystem.getClip();
+//			//themePlayer.open(stream);
+//			//themePlayer.start();
+//			if(loop) {
+//				//themePlayer.loop(-1);
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	private void update() {
 		updateSize();
-		if(battleInProgress) {
-			themePlayer.stop();
-			startMusic(GameData.battleSong, false);
-			battleInProgress = false;
-		}
+		Player.updatePos();
 	}
 
 	private void updateSize() {
@@ -295,7 +287,7 @@ public class Game implements ActionListener, KeyListener {
 				frame.setResizable(true);
 			}
 		}).start();
-		toolbar.removeItem(ItemTypes.EXPLOSIVE);
+		Toolbar.removeItem(ItemTypes.EXPLOSIVE);
 		tiles[row][column].setDiscovered(true);
 		tiles[row][column].setItem(ItemTypes.NONE);
 	}
@@ -343,18 +335,6 @@ public class Game implements ActionListener, KeyListener {
 
 	public JFrame getFrame() {
 		return frame;
-	}
-	
-	public Player getPlayer() {
-		return player;
-	}
-	
-	public Wumpus getWumpus() {
-		return wumpus;
-	}
-	
-	public Toolbar getToolbar() {
-		return toolbar;
 	}
 
 	public Tile[][] getTiles() {

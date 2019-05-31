@@ -1,100 +1,136 @@
 package game;
 
-
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+
+import javax.swing.Timer;
 
 import game.GameData.MovementDirections;
 
 public class Player {
-	
-	private int row, column;
-	private GameData.MovementDirections movementDirection;
-	private BufferedImage spriteToUse;
-	
-	public Player() {
-		spriteToUse = GameData.characterBackwardsStillSprite;
-		movementDirection = MovementDirections.DOWN;
+
+	private static int x, y, row, column, spriteIndex;
+	private static boolean moving;
+	private static GameData.MovementDirections movementDirection = MovementDirections.DOWN;
+	private static BufferedImage[] spritesToUse = GameData.characterBackwardsSprite;
+
+	static {
+		new Timer(200, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (moving) {
+					spriteIndex++;
+					if (spriteIndex == spritesToUse.length) {
+						spriteIndex = 0;
+					}
+				}
+			}
+		}).start();
+	}
+
+	public static void move(MovementDirections direction) {
+		if (!moving) {
+			if (direction == MovementDirections.UP && row > 0) {
+				spritesToUse = GameData.characterForwardsSprite;
+				if (movementDirection == direction) {
+					moving = true;
+					row--;
+				}
+			} else if (direction == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
+				spritesToUse = GameData.characterBackwardsSprite;
+				if (movementDirection == direction) {
+					moving = true;
+					row++;
+				}
+			} else if (direction == MovementDirections.LEFT && column > 0) {
+				spritesToUse = GameData.characterLeftSprite;
+				if (movementDirection == direction) {
+					moving = true;
+					column--;
+				}
+			} else if (direction == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
+				spritesToUse = GameData.characterRightSprite;
+				if (movementDirection == direction) {
+					moving = true;
+					column++;
+				}
+			}
+			Game.game.getTiles()[row][column].setDiscovered(true);
+			movementDirection = direction;
+		}
+	}
+
+	public static void updatePos() {
+		if ((double) x / GameData.TILE_WIDTH < column) {
+			x += GameData.PLAYER_VELOCITY;
+		} else if ((double) x / GameData.TILE_WIDTH > column) {
+			x -= GameData.PLAYER_VELOCITY;
+		}
+		if ((double) y / GameData.TILE_HEIGHT < row) {
+			y += GameData.PLAYER_VELOCITY;
+		} else if ((double) y / GameData.TILE_HEIGHT > row) {
+			y -= GameData.PLAYER_VELOCITY;
+		}
+		if ((double) x / GameData.TILE_WIDTH == column && (double) y / GameData.TILE_HEIGHT == row) {
+			finalizeMovement();
+		}
 	}
 	
-	public void move(MovementDirections direction) {
-		int prevRow = row, prevCol = column;
-		if(direction == MovementDirections.UP && row > 0) {
-			spriteToUse = GameData.characterFowardsStillSprite;
-			if(movementDirection == direction) {
-				spriteToUse = GameData.characterForwardsRunningSprite;
-				row--;
-			}
-		}else if (direction == MovementDirections.DOWN && row < GameData.TILE_AMOUNT-1) {
-			spriteToUse = GameData.characterBackwardsStillSprite;
-			if(movementDirection == direction) {
-				spriteToUse = GameData.characterBackwardsRunningSprite;
-				row++;
-			}
-		}else if (direction == MovementDirections.LEFT && column > 0) {
-			spriteToUse = GameData.characterLeftStillSprite;
-			if(movementDirection == direction) {
-				spriteToUse = GameData.characterLeftRunningSprite;
-				column--;
-			}
-		}else if (direction == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
-			spriteToUse = GameData.characterRightStillSprite;
-			if(movementDirection == direction) {
-				spriteToUse = GameData.characterRightRunningSprite;
-				column++;
-			}
-		}
+	private static void finalizeMovement() {
 		Tile.updateAffectedTiles();
-		if(row == Game.game.getWumpus().getRow() && column == Game.game.getWumpus().getColumn()) {
+		if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
 			battleWumpus();
 		}
-		if(prevRow != row || prevCol != column) {
-			Game.game.getWumpus().move();
+		if(moving == true) {
+			Wumpus.move();
+			moving = false;
+			spriteIndex = 0;
 		}
-		Game.game.getTiles()[row][column].setDiscovered(true);
-		movementDirection = direction;
+		
 	}
-	
-	private void battleWumpus() {
-		double chance = (Math.random()*100);
-		if(Game.game.getToolbar().weaponAvailable()) {
-			if(chance <= 80) {
+
+	private static void battleWumpus() {
+		double chance = (Math.random() * 100);
+		if (Toolbar.weaponAvailable()) {
+			if (chance <= 80) {
 				Game.game.setWinner(true);
-			}else {
+			} else {
 				Game.game.setWinner(false);
 			}
-		}else {
-			if(chance <= 20) {
+		} else {
+			if (chance <= 20) {
 				Game.game.setWinner(true);
-			}else {
+			} else {
 				Game.game.setWinner(false);
 			}
 		}
 	}
-	
-	
-	public void shoot() {
-		if(movementDirection == MovementDirections.UP && row > 0) {
-			Game.game.explodeTile(row-1, column);
-		}else if (movementDirection == MovementDirections.DOWN && row < GameData.TILE_AMOUNT-1) {
-			Game.game.explodeTile(row+1, column);
-		}else if (movementDirection == MovementDirections.LEFT && column > 0) {
-			Game.game.explodeTile(row, column-1);
-		}else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT-1) {
-			Game.game.explodeTile(row, column+1);
+
+	public static void shoot() {
+		if (movementDirection == MovementDirections.UP && row > 0) {
+			Game.game.explodeTile(row - 1, column);
+		} else if (movementDirection == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
+			Game.game.explodeTile(row + 1, column);
+		} else if (movementDirection == MovementDirections.LEFT && column > 0) {
+			Game.game.explodeTile(row, column - 1);
+		} else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
+			Game.game.explodeTile(row, column + 1);
 		}
 	}
-	
-	public int getRow() {
+
+	public static int getRow() {
 		return row;
 	}
-	
-	public int getColumn() {
+
+	public static int getColumn() {
 		return column;
 	}
-	
-	public void render(Graphics g) {
-		g.drawImage(spriteToUse, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+
+	public static void render(Graphics g) {
+		g.drawImage(spritesToUse[spriteIndex], x, y, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 	}
 
 }
