@@ -58,7 +58,7 @@ public class Player {
 					column++;
 				}
 			}
-			//Game.game.getTiles()[row][column].setDiscovered(true);
+			Game.game.getTiles()[row][column].setDiscovered(true);
 			movementDirection = direction;
 		}
 	}
@@ -78,7 +78,6 @@ public class Player {
 				y -= GameData.PLAYER_VELOCITY;
 			}
 		}
-		
 	}
 	
 	private static void finalizeMovement() {

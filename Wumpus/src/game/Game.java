@@ -227,7 +227,6 @@ public class Game implements ActionListener, KeyListener {
 				for (Tile tile : tileArr)
 					tile.render(g);
 			Player.render(g);
-			Wumpus.render(g);
 			Toolbar.render(g);
 			g.setColor(Color.WHITE);
 			break;
@@ -256,7 +255,6 @@ public class Game implements ActionListener, KeyListener {
 	private void update() {
 		updateSize();
 		Player.updatePos();
-		Wumpus.updatePos();
 	}
 
 	private void updateSize() {
