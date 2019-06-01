@@ -33,7 +33,8 @@ public class GameData {
 	public static final int TOOLBAR_SLOTS = 5;
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
 	
-	public static final float FLASHLIGHT_BLOCK_OPACITY = .7f;
+	public static final float FLASHLIGHT_BLOCK_OPACITY = 0.7f;
+	public static final float WUMPUS_FADE_SPEED = .05f;
 
 	public static AudioInputStream themeSong, battleSong;
 	

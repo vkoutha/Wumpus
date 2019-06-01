@@ -5,8 +5,11 @@ import java.awt.Graphics;
 public class Wumpus {
 	
 	private static int row, column;
+	public static boolean moving;
+	private static float opacity;
 	
 	static {
+		opacity = 1f;
 		do {
 			row = (int) (Math.random() * GameData.TILE_AMOUNT);
 			column = (int) (Math.random() * GameData.TILE_AMOUNT);
@@ -45,9 +48,26 @@ public class Wumpus {
 			}
 			column += movement;
 		}
-		if(row == Player.getRow() && column == Player.getColumn()) {
-			battlePlayer();
+//		if(row == Player.getRow() && column == Player.getColumn()) {
+//			battlePlayer();
+//		}
+	}
+	
+	public static void updateFadeMove() {
+		if(opacity > 0f && moving) {
+			opacity -= GameData.WUMPUS_FADE_SPEED;
+			if(opacity <= 0f) {
+				move();
+				moving = false;
+				opacity = 0f;
+			}
+		}else if(!moving && opacity <= .95f) {
+			opacity+= GameData.WUMPUS_FADE_SPEED;	
 		}
+	}
+	
+	public static void setMoving(boolean moving) {
+		Wumpus.moving = moving;
 	}
 	
 	private static void battlePlayer() {
@@ -65,6 +85,10 @@ public class Wumpus {
 				Game.game.setWinner(false);
 			}
 		}
+	}
+	
+	public static float getOpacity() {
+		return opacity;
 	}
 	
 	public static int getRow() {

@@ -236,25 +236,26 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	private void startMusic(AudioInputStream stream, boolean loop) { 
-//		try {
-//			if(themePlayer != null && themePlayer.getMicrosecondPosition() > 0) {
-//				themePlayer.stop();
-//			}
-//			themePlayer = AudioSystem.getClip();
-//			//themePlayer.open(stream);
-//			//themePlayer.start();
-//			if(loop) {
-//				//themePlayer.loop(-1);
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			if(themePlayer != null && themePlayer.getMicrosecondPosition() > 0) {
+				themePlayer.stop();
+			}
+			themePlayer = AudioSystem.getClip();
+			themePlayer.open(stream);
+			themePlayer.start();
+			if(loop) {
+				themePlayer.loop(-1);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void update() {
 		updateSize();
 		Player.updatePos();
+		Wumpus.updateFadeMove();
 	}
 
 	private void updateSize() {
@@ -272,6 +273,8 @@ public class Game implements ActionListener, KeyListener {
 			explosionAnimation = new JLabel(GameData.explosionAnimation);
 			losingAnimation = new JLabel(GameData.losingAnimation);
 			winningAnimation = new JLabel(GameData.winningAnimation);
+			Player.setXPos(Player.getColumn() * GameData.TILE_WIDTH);
+			Player.setYPos(Player.getRow() * GameData.TILE_HEIGHT);
 		}
 	}
 	

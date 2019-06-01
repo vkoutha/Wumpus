@@ -58,8 +58,13 @@ public class Player {
 					column++;
 				}
 			}
+			if(moving == true) {
+				Wumpus.setMoving(true);
+				Wumpus.updateFadeMove();
+			}
 			Game.game.getTiles()[row][column].setDiscovered(true);
 			movementDirection = direction;
+			
 		}
 	}
 
@@ -86,7 +91,6 @@ public class Player {
 //			battleWumpus();
 //		}
 		if(moving == true) {
-			Wumpus.move();
 			moving = false;
 			spriteIndex = 0;
 		}
@@ -120,6 +124,14 @@ public class Player {
 		} else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
 			Game.game.explodeTile(row, column + 1);
 		}
+	}
+	
+	public static void setXPos(int xPos) {
+		x = xPos;
+	}
+	
+	public static void setYPos(int yPos) {
+		y = yPos;
 	}
 
 	public static int getRow() {

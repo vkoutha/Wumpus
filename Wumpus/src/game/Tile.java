@@ -20,6 +20,7 @@ public class Tile {
 		this.row = row;
 		this.column = column;	
 		item = ItemTypes.NONE;
+		//isDiscovered = true;
 	} 
 	
 	public int getRow() {
@@ -109,7 +110,9 @@ public class Tile {
 			g2.drawImage(itemSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		}
 		if(row == Wumpus.getRow() && column == Wumpus.getColumn()) {
+			g2.setComposite(AlphaComposite.SrcOver.derive(Wumpus.getOpacity()));
 			g2.drawImage(GameData.wumpusSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+			g2.setComposite(AlphaComposite.SrcOver.derive(1f));
 		}
 		if(!isDiscovered) {
 			if(Toolbar.getFlashlightRadius() > 0 && isFlashlightAffected) {
