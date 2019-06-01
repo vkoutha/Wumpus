@@ -157,15 +157,19 @@ public class Game implements ActionListener, KeyListener {
 			break;
 		case IN_GAME:
 			switch (e.getKeyCode()) {
+			case KeyEvent.VK_A:
 			case KeyEvent.VK_LEFT:
 				Player.move(GameData.MovementDirections.LEFT);
 				break;
+			case KeyEvent.VK_D:
 			case KeyEvent.VK_RIGHT:
 				Player.move(GameData.MovementDirections.RIGHT);
 				break;
+			case KeyEvent.VK_W:
 			case KeyEvent.VK_UP:
 				Player.move(GameData.MovementDirections.UP);
 				break;
+			case KeyEvent.VK_S:
 			case KeyEvent.VK_DOWN:
 				Player.move(GameData.MovementDirections.DOWN);
 				break;
@@ -174,7 +178,7 @@ public class Game implements ActionListener, KeyListener {
 					Player.shoot();
 				}
 				break;
-			case KeyEvent.VK_A:
+			case KeyEvent.VK_Z:
 				if(tiles[Player.getRow()][Player.getColumn()].getItem() != ItemTypes.NONE) {
 					Toolbar.addItem(tiles[Player.getRow()][Player.getColumn()].getItem());
 					Tile.updateAffectedTiles();
@@ -223,6 +227,7 @@ public class Game implements ActionListener, KeyListener {
 				for (Tile tile : tileArr)
 					tile.render(g);
 			Player.render(g);
+			Wumpus.render(g);
 			Toolbar.render(g);
 			g.setColor(Color.WHITE);
 			break;
@@ -251,6 +256,7 @@ public class Game implements ActionListener, KeyListener {
 	private void update() {
 		updateSize();
 		Player.updatePos();
+		Wumpus.updatePos();
 	}
 
 	private void updateSize() {

@@ -4,13 +4,17 @@ import java.awt.Graphics;
 
 public class Wumpus {
 	
-	private static int row, column;
+	private static int x, y, row, column;
 	
 	static {
 		do {
 			row = (int) (Math.random() * GameData.TILE_AMOUNT);
 			column = (int) (Math.random() * GameData.TILE_AMOUNT);
 		}while(row == 0 && column == 0);
+		x = column * GameData.TILE_WIDTH;
+		y = row * GameData.TILE_HEIGHT;
+		System.out.println(column + " " + row);
+		System.out.println(x + " " + y);
 	}
 	
 	public static void move() {
@@ -45,8 +49,21 @@ public class Wumpus {
 			}
 			column += movement;
 		}
-		if(row == Player.getRow() && column == Player.getColumn()) {
-			battlePlayer();
+//		if(row == Player.getRow() && column == Player.getColumn()) {
+//			battlePlayer();
+//		}
+	}
+	
+	public static void updatePos() {
+		if ((double) x / GameData.TILE_WIDTH < column) {
+			x += GameData.PLAYER_VELOCITY;
+		} else if ((double) x / GameData.TILE_WIDTH > column) {
+			x -= GameData.PLAYER_VELOCITY;
+		}
+		if ((double) y / GameData.TILE_HEIGHT < row) {
+			y += GameData.PLAYER_VELOCITY;
+		} else if ((double) y / GameData.TILE_HEIGHT > row) {
+			y -= GameData.PLAYER_VELOCITY;
 		}
 	}
 	
@@ -67,6 +84,14 @@ public class Wumpus {
 		}
 	}
 	
+	public static int getX() {
+		return x;
+	}
+	
+	public static int getY() {
+		return y;
+	}
+	
 	public static int getRow() {
 		return row;
 	}
@@ -80,7 +105,7 @@ public class Wumpus {
 	 * @param g
 	 */
 	public static void render(Graphics g) {
-		g.drawImage(GameData.wumpusSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+		g.drawImage(GameData.wumpusSprite, x, y, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 	}
 
 }

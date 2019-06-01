@@ -58,32 +58,34 @@ public class Player {
 					column++;
 				}
 			}
-			Game.game.getTiles()[row][column].setDiscovered(true);
+			//Game.game.getTiles()[row][column].setDiscovered(true);
 			movementDirection = direction;
 		}
 	}
 
 	public static void updatePos() {
-		if ((double) x / GameData.TILE_WIDTH < column) {
-			x += GameData.PLAYER_VELOCITY;
-		} else if ((double) x / GameData.TILE_WIDTH > column) {
-			x -= GameData.PLAYER_VELOCITY;
-		}
-		if ((double) y / GameData.TILE_HEIGHT < row) {
-			y += GameData.PLAYER_VELOCITY;
-		} else if ((double) y / GameData.TILE_HEIGHT > row) {
-			y -= GameData.PLAYER_VELOCITY;
-		}
-		if ((double) x / GameData.TILE_WIDTH == column && (double) y / GameData.TILE_HEIGHT == row) {
+		if (GameData.within(x, GameData.TILE_WIDTH * column) && GameData.within(y, GameData.TILE_HEIGHT * row) ) {
 			finalizeMovement();
+		}else {
+			if (x < GameData.TILE_WIDTH * column) {
+				x += GameData.PLAYER_VELOCITY;
+			} else if (x > GameData.TILE_WIDTH * column) {
+				x -= GameData.PLAYER_VELOCITY;
+			}
+			if (y < GameData.TILE_HEIGHT * row) {
+				y += GameData.PLAYER_VELOCITY;
+			} else if (y > GameData.TILE_HEIGHT * row) {
+				y -= GameData.PLAYER_VELOCITY;
+			}
 		}
+		
 	}
 	
 	private static void finalizeMovement() {
 		Tile.updateAffectedTiles();
-		if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
-			battleWumpus();
-		}
+//		if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
+//			battleWumpus();
+//		}
 		if(moving == true) {
 			Wumpus.move();
 			moving = false;

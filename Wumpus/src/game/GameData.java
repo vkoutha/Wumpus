@@ -15,6 +15,7 @@ public class GameData {
 	public static final String FRAME_NAME = "Wumpus";
 	public static int FRAME_EXTENDED_WIDTH = 940;
 	public static int FRAME_WIDTH = 800;
+	public static int FRAME_EXTRA_WIDTH = FRAME_EXTENDED_WIDTH - FRAME_WIDTH;
 	public static int FRAME_HEIGHT = 800;
 	public static int FRAME_WIDTH_DIFFERENCE = 0;
 	public static int FRAME_HEIGHT_DIFFERENCE = 0;
@@ -40,6 +41,7 @@ public class GameData {
 	public static BufferedImage rockSprite, grassSprite;
 	public static BufferedImage characterSpriteSheet, wumpusSprite;
 	public static BufferedImage[] characterBackwardsSprite, characterForwardsSprite, characterLeftSprite, characterRightSprite;
+	public static BufferedImage toolbarBox;
 	public static BufferedImage flashlightSprite, compassSprite, goldSprite, explosiveSprite, swordSprite;
 	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
 			rulesSelectedIcon;
@@ -115,6 +117,7 @@ public class GameData {
 			characterLeftSprite[1] = characterSpriteSheet.getSubimage(448, 1200, 464, 608);
 			characterLeftSprite[2] = characterSpriteSheet.getSubimage(944, 1200, 384, 608);
 			characterLeftSprite[3] = characterSpriteSheet.getSubimage(1360, 1200, 400, 608);
+			
 			wumpusSprite = ImageIO.read(GameData.class.getResource("/img/characters/wumpusSprite.png"));
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -146,6 +149,7 @@ public class GameData {
 	
 	private static void initItemSprites() {
 		try {
+			toolbarBox = ImageIO.read(GameData.class.getResource("/img/items/toolbarBox.png"));
 			flashlightSprite = ImageIO.read(GameData.class.getResource("/img/items/flashlightSprite.png")); 
 			compassSprite = ImageIO.read(GameData.class.getResource("/img/items/compassSprite.gif"));
 			goldSprite = ImageIO.read(GameData.class.getResource("/img/items/goldSprite.png"));
@@ -173,6 +177,10 @@ public class GameData {
 		winningAnimationImage = winningAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
 		winningAnimation = new ImageIcon(winningAnimationImage);
 		
+	}
+	
+	public static boolean within(double x, double y) {
+		return Math.abs(x - y) <= PLAYER_VELOCITY+1;
 	}
 	
 	public enum GameState{
