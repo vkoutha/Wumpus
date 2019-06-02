@@ -61,7 +61,7 @@ public class Wumpus {
 				moving = false;
 				opacity = 0f;
 			}
-		}else if(!moving && opacity <= .95f) {
+		}else if(!moving && opacity <= 1f - GameData.WUMPUS_FADE_SPEED) {
 			opacity+= GameData.WUMPUS_FADE_SPEED;	
 		}
 	}

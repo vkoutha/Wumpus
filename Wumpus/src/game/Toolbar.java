@@ -54,7 +54,6 @@ public class Toolbar {
 			if(flashlightCount == 0) {
 				items.remove(ItemTypes.FLASHLIGHT);
 			}
-			//Game.game.getPlayer().addFlashlight();
 		}else if(item == ItemTypes.COMPASS) {
 			compassCount--;
 			if(compassCount == 0) {
@@ -73,6 +72,10 @@ public class Toolbar {
 		}
 	}
 	
+	public static int getExplosiveCount() {
+		return explosiveCount;
+	}
+	
 	public static int getFlashlightRadius() {
 		return flashlightCount;
 	}
@@ -86,42 +89,42 @@ public class Toolbar {
 		for(int i = 0; i < items.size(); i++) {
 			switch(items.get(i)) {
 			case FLASHLIGHT:
-				g.drawImage(GameData.flashlightSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/5), 
-						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/5)), 
-						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/5),
-						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/5), null);
+				g.drawImage(GameData.flashlightSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION), 
+						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
+						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
+						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
 				//g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("x" + flashlightCount, GameData.FRAME_WIDTH + 5, (i * GameData.TOOLBAR_SLOT_HEIGHT) + 20);
 				break;
 			case COMPASS:
-				g.drawImage(GameData.compassSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/5), 
-						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/5)), 
-						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/5),
-						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/5), null);
+				g.drawImage(GameData.compassSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION), 
+						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
+						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
+						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
 				//g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("Uses: " + compassCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case GOLD:
-				g.drawImage(GameData.goldSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/5), 
-						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/5)), 
-						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/5),
-						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/5), null);
+				g.drawImage(GameData.goldSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION), 
+						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
+						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
+						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
 				//g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("x" + goldCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case EXPLOSIVE:
-				g.drawImage(GameData.explosiveSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/5), 
-						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/5)), 
-						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/5),
-						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/5), null);
+				g.drawImage(GameData.explosiveSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION), 
+						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
+						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
+						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
 				//g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("x" + explosiveCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case SWORD:
-				g.drawImage(GameData.swordSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/5), 
-						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/5)), 
-						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/5),
-						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/5), null);
+				g.drawImage(GameData.swordSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION), 
+						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
+						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
+						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
 				g.drawString("x1", GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case NONE:

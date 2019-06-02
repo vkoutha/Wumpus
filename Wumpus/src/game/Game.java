@@ -1,10 +1,11 @@
 package game;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,11 +16,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -82,11 +81,20 @@ public class Game implements ActionListener, KeyListener {
 
 	private void initItems() {
 		Toolbar.addItem(ItemTypes.EXPLOSIVE);
-		Toolbar.addItem(ItemTypes.EXPLOSIVE);
-		Toolbar.addItem(ItemTypes.EXPLOSIVE);
-		tiles[5][4].setItem(ItemTypes.FLASHLIGHT);
-		tiles[3][3].setItem(ItemTypes.GOLD);
-		tiles[6][5].setItem(ItemTypes.SWORD);
+		assignNewRandomTile(ItemTypes.EXPLOSIVE);
+		assignNewRandomTile(ItemTypes.EXPLOSIVE);
+		assignNewRandomTile(ItemTypes.FLASHLIGHT);
+		assignNewRandomTile(ItemTypes.COMPASS);
+		assignNewRandomTile(ItemTypes.SWORD);
+	}
+	
+	private void assignNewRandomTile(ItemTypes item) {
+		int randRow, randCol;
+		do {
+			randRow = (int) (Math.random() * GameData.TILE_AMOUNT);
+			randCol = (int) (Math.random() * GameData.TILE_AMOUNT);
+		}while(randRow + randCol == 0 || tiles[randRow][randCol].getItem() != ItemTypes.NONE);
+	 	tiles[randRow][randCol].setItem(item);		
 	}
 	
 	private void addButtons() {
@@ -140,7 +148,7 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	@Override
-	public void keyReleased(KeyEvent e) {
+	public void keyPressed(KeyEvent e) {
 		switch(gameState) {
 		case MENU:
 			break;
@@ -174,7 +182,7 @@ public class Game implements ActionListener, KeyListener {
 				Player.move(GameData.MovementDirections.DOWN);
 				break;
 			case KeyEvent.VK_SPACE:
-				if(!explosionInProgress) {
+				if(!explosionInProgress && Toolbar.getExplosiveCount() > 0) {
 					Player.shoot();
 				}
 				break;
@@ -191,11 +199,20 @@ public class Game implements ActionListener, KeyListener {
 			case KeyEvent.VK_T:
 				break;
 			case KeyEvent.VK_ESCAPE:
-				gameState = GameState.MENU;
+				System.out.println(gameState);
+				gameState = GameState.PAUSED;
+				renderer.revalidate();
+				addButtons();
 				break;
 			}
 			break;
 		case PAUSED:
+			switch(e.getKeyCode()) {
+			case KeyEvent.VK_ESCAPE:
+				renderer.removeAll();
+				gameState = GameState.IN_GAME;
+				break;
+			}
 			break;
 		}
 	}
@@ -206,7 +223,7 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public void keyReleased(KeyEvent e) {
 
 	}
 	
@@ -222,15 +239,19 @@ public class Game implements ActionListener, KeyListener {
 			break;
 		case RULES:
 			break;
+		case PAUSED:
 		case IN_GAME:
 			for (Tile[] tileArr : tiles)
 				for (Tile tile : tileArr)
 					tile.render(g);
 			Player.render(g);
 			Toolbar.render(g);
-			g.setColor(Color.WHITE);
-			break;
-		case PAUSED:
+			if(gameState == GameState.PAUSED) {
+				g.setColor(Color.DARK_GRAY);
+				Graphics2D g2 = (Graphics2D) g.create();
+				g2.setComposite(AlphaComposite.SrcOver.derive(.8f));
+				g2.fillRect(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+			}
 			break;
 		}
 	}

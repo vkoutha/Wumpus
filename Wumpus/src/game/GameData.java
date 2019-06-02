@@ -24,17 +24,18 @@ public class GameData {
 	
 	public static final int VERTICAL_DISTANCE_BETWEEN_BUTTONS = 20;
 	
-	public static final int TILE_AMOUNT = 10;
+	public static final int TILE_AMOUNT = 8;
 	public static int TILE_WIDTH = (FRAME_WIDTH/TILE_AMOUNT);
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/TILE_AMOUNT);
 	
-	public static final int PLAYER_VELOCITY = 4;
+	public static final int PLAYER_VELOCITY = 5;
 	
-	public static final int TOOLBAR_SLOTS = 5;
+	public static final int TOOLBAR_SLOTS = 4;
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
+	public static final int TOOLBAR_ITEM_PROPORTION = 5;
 	
 	public static final float FLASHLIGHT_BLOCK_OPACITY = 0.7f;
-	public static final float WUMPUS_FADE_SPEED = .05f;
+	public static final float WUMPUS_FADE_SPEED = .1f;
 
 	public static AudioInputStream themeSong, battleSong;
 	
@@ -66,7 +67,7 @@ public class GameData {
 			e.printStackTrace();
 		}
 	}
-	
+	 
 	private static void initMenuSprites() {
 		try {
 			wumpusLogo = ImageIO.read(GameData.class.getResource("/img/wumpusLogo.png"));
@@ -153,7 +154,7 @@ public class GameData {
 			toolbarBox = ImageIO.read(GameData.class.getResource("/img/items/toolbarBox.png"));
 			flashlightSprite = ImageIO.read(GameData.class.getResource("/img/items/flashlightSprite.png")); 
 			compassSprite = ImageIO.read(GameData.class.getResource("/img/items/compassSprite.gif"));
-			goldSprite = ImageIO.read(GameData.class.getResource("/img/items/goldSprite.png"));
+			//goldSprite = ImageIO.read(GameData.class.getResource("/img/items/goldSprite.png"));
 			explosiveSprite = ImageIO.read(GameData.class.getResource("/img/items/explosiveSprite.png"));
 			swordSprite = ImageIO.read(GameData.class.getResource("/img/items/swordSprite.png"));
 		}catch(Exception e) {
@@ -181,7 +182,7 @@ public class GameData {
 	}
 	
 	public static boolean within(double x, double y) {
-		return Math.abs(x - y) <= PLAYER_VELOCITY+1;
+		return Math.abs(x - y) < PLAYER_VELOCITY;
 	}
 	
 	public enum GameState{

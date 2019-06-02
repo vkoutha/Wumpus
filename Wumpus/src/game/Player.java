@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.Timer;
-
+import game.GameData.ItemTypes;
 import game.GameData.MovementDirections;
 
 public class Player {
@@ -63,24 +63,27 @@ public class Player {
 				Wumpus.updateFadeMove();
 			}
 			Game.game.getTiles()[row][column].setDiscovered(true);
-			movementDirection = direction;
-			
+			movementDirection = direction;		
 		}
 	}
 
 	public static void updatePos() {
 		if (GameData.within(x, GameData.TILE_WIDTH * column) && GameData.within(y, GameData.TILE_HEIGHT * row) ) {
-			finalizeMovement();
-		}else {
-			if (x < GameData.TILE_WIDTH * column) {
-				x += GameData.PLAYER_VELOCITY;
-			} else if (x > GameData.TILE_WIDTH * column) {
-				x -= GameData.PLAYER_VELOCITY;
-			}
-			if (y < GameData.TILE_HEIGHT * row) {
-				y += GameData.PLAYER_VELOCITY;
-			} else if (y > GameData.TILE_HEIGHT * row) {
-				y -= GameData.PLAYER_VELOCITY;
+			finalizeMovement(); 
+		}else{ 
+			if(!GameData.within(x, GameData.TILE_WIDTH * column)){ 
+				System.out.println("[" + GameData.TILE_WIDTH * column  + ", " + GameData.TILE_HEIGHT * row + "]");
+				if (x < GameData.TILE_WIDTH * column) {
+					x += GameData.PLAYER_VELOCITY;
+				} else if (x > GameData.TILE_WIDTH * column) {
+					x -= GameData.PLAYER_VELOCITY;
+				}
+			}else if (!GameData.within(y, GameData.TILE_HEIGHT * row)) {
+				if (y < GameData.TILE_HEIGHT * row) {
+					y += GameData.PLAYER_VELOCITY;
+				} else if (y > GameData.TILE_HEIGHT * row) {
+					y -= GameData.PLAYER_VELOCITY;
+				}
 			}
 		}
 	}
