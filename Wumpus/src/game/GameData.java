@@ -35,7 +35,7 @@ public class GameData {
 	public static final int TOOLBAR_ITEM_PROPORTION = 5;
 	
 	public static final float FLASHLIGHT_BLOCK_OPACITY = 0.7f;
-	public static final float WUMPUS_FADE_SPEED = .1f;
+	public static final float WUMPUS_FADE_SPEED = .04f;
 
 	public static AudioInputStream themeSong, battleSong;
 	

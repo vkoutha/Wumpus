@@ -32,9 +32,6 @@ public class Game implements ActionListener, KeyListener {
 	private Timer timer;
 	private Renderer renderer;
 	private Tile[][] tiles;
-	private Player player;
-	private Wumpus wumpus;
-	private Toolbar toolbar;
 	private GameState gameState;
 	private JLabel explosionAnimation, losingAnimation, winningAnimation;
 	private JButton startGameButton, settingsMenuButton, rulesButton;
@@ -183,7 +180,7 @@ public class Game implements ActionListener, KeyListener {
 				break;
 			case KeyEvent.VK_SPACE:
 				if(!explosionInProgress && Toolbar.getExplosiveCount() > 0) {
-					Player.shoot();
+					Player.shoot();    
 				}
 				break;
 			case KeyEvent.VK_Z:
