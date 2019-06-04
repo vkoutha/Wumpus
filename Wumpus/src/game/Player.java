@@ -12,7 +12,7 @@ import game.GameData.MovementDirections;
 public class Player {
 
 	private static int x, y, row, column, spriteIndex;
-	private static boolean moving;
+	private static boolean isSuperSayain, moving;
 	private static GameData.MovementDirections movementDirection = MovementDirections.DOWN;
 	private static BufferedImage[] spritesToUse = GameData.characterBackwardsSprite;
 
@@ -33,26 +33,25 @@ public class Player {
 
 	public static void move(MovementDirections direction) {
 		if (!moving) {
+			if(direction != movementDirection) {
+				setSprite(direction);
+			}
 			if (direction == MovementDirections.UP && row > 0) {
-				spritesToUse = GameData.characterForwardsSprite;
 				if (movementDirection == direction) {
 					moving = true;
 					row--;
 				}
 			} else if (direction == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
-				spritesToUse = GameData.characterBackwardsSprite;
 				if (movementDirection == direction) {
 					moving = true;
 					row++;
 				}
 			} else if (direction == MovementDirections.LEFT && column > 0) {
-				spritesToUse = GameData.characterLeftSprite;
 				if (movementDirection == direction) {
 					moving = true;
 					column--;
 				}
 			} else if (direction == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
-				spritesToUse = GameData.characterRightSprite;
 				if (movementDirection == direction) {
 					moving = true;
 					column++;
@@ -67,12 +66,23 @@ public class Player {
 		}
 	}
 
+	private static void setSprite(MovementDirections direction) {
+		if (direction == MovementDirections.UP && row > 0) {
+			spritesToUse = !isSuperSayain ? GameData.characterForwardsSprite : GameData.superSayainForwardsSprite;
+		} else if (direction == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
+			spritesToUse = !isSuperSayain ? GameData.characterBackwardsSprite : GameData.superSayainBackwardsSprite;
+		} else if (direction == MovementDirections.LEFT && column > 0) {
+			spritesToUse = !isSuperSayain ? GameData.characterLeftSprite : GameData.superSayainLeftSprite;
+		} else if (direction == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
+			spritesToUse = !isSuperSayain ? GameData.characterRightSprite : GameData.superSayainRightSprite;
+		}
+	}
+
 	public static void updatePos() {
 		if (GameData.within(x, GameData.TILE_WIDTH * column) && GameData.within(y, GameData.TILE_HEIGHT * row) ) {
 			finalizeMovement(); 
 		}else{ 
 			if(!GameData.within(x, GameData.TILE_WIDTH * column)){ 
-				System.out.println("[" + GameData.TILE_WIDTH * column  + ", " + GameData.TILE_HEIGHT * row + "]");
 				if (x < GameData.TILE_WIDTH * column) {
 					x += GameData.PLAYER_VELOCITY;
 				} else if (x > GameData.TILE_WIDTH * column) {
@@ -129,6 +139,14 @@ public class Player {
 		}
 	}
 	
+	public static void setSuperSayain(boolean superSayain) {
+		isSuperSayain = superSayain;
+		if(superSayain == true) {
+			setSprite(movementDirection);
+			Game.game.explodeTile(row, column);
+		}
+	}
+	
 	public static void setXPos(int xPos) {
 		x = xPos;
 	}
@@ -143,6 +161,14 @@ public class Player {
 
 	public static int getColumn() {
 		return column;
+	}
+	
+	public static int getXPos() {
+		return x;
+	}
+	
+	public static int getYPos() {
+		return y;
 	}
 
 	public static void render(Graphics g) {

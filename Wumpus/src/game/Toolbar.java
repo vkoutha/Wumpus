@@ -1,9 +1,9 @@
 package game;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import game.GameData.ItemTypes;
@@ -36,6 +36,7 @@ public class Toolbar {
 			}
 			goldCount++;
 		}else if (item == ItemTypes.SWORD) {
+			Player.setSuperSayain(true);
 			items.add(ItemTypes.SWORD);
 			swordCount++;
 		}
@@ -97,11 +98,8 @@ public class Toolbar {
 				g.drawString("x" + flashlightCount, GameData.FRAME_WIDTH + 5, (i * GameData.TOOLBAR_SLOT_HEIGHT) + 20);
 				break;
 			case COMPASS:
-				g.drawImage(GameData.compassSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION), 
-						(i * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
-						GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
-						GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
-				//g.setFont(new Font("Arial", 15, Font.BOLD));
+		        drawCompass(g, i);
+
 				g.drawString("Uses: " + compassCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case GOLD:
@@ -131,6 +129,23 @@ public class Toolbar {
 				break;
 			}
 		}
+	}
+	
+	private static void drawCompass(Graphics g, int slot) {
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.drawImage(GameData.compassSprite, GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION), 
+		(slot * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
+		GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
+		GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
+		//g.setFont(new Font("Arial", 15, Font.BOLD));
+		g2.setColor(Color.RED);
+		g2.setStroke(new BasicStroke(5));
+		int xDiff = Player.getRow() - Wumpus.getRow();
+		int yDiff = Player.getColumn() - Wumpus.getColumn(); 
+		g2.drawLine(GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2), (slot * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2), 
+				GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2) - yDiff*GameData.TOOLBAR_ITEM_PROPORTION, 
+				(slot * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2) - xDiff*GameData.TOOLBAR_ITEM_PROPORTION);
+		
 	}
 	
 }

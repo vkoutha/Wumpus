@@ -61,8 +61,8 @@ public class Wumpus {
 				moving = false;
 				opacity = 0f;
 			}
-		}else if(!moving && opacity <= 1f - GameData.WUMPUS_FADE_SPEED) {
-			opacity+= GameData.WUMPUS_FADE_SPEED;	
+		}else if(opacity + GameData.WUMPUS_FADE_SPEED <= 1f && Game.game.getTiles()[row][column].isFlashlightAffected()) {
+			opacity += GameData.WUMPUS_FADE_SPEED;	
 		}
 	}
 	

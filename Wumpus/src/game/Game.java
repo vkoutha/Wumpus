@@ -54,7 +54,7 @@ public class Game implements ActionListener, KeyListener {
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initialize();
-		startMusic(GameData.themeSong, true);
+		//startMusic(GameData.themeSong, true);
 		gameState = GameState.MENU;
 		addButtons();
 		timer.start();
@@ -67,6 +67,8 @@ public class Game implements ActionListener, KeyListener {
 				tiles[r][c] = new Tile(r, c);
 			}
 		}
+		Toolbar.addItem(ItemTypes.COMPASS);
+		Toolbar.addItem(ItemTypes.FLASHLIGHT);
 		tiles[0][0].setDiscovered(true);
 		initItems();
 		explosionAnimation = new JLabel(GameData.explosionAnimation);
@@ -154,7 +156,7 @@ public class Game implements ActionListener, KeyListener {
 			case KeyEvent.VK_ESCAPE:
 				gameState = GameState.MENU;
 				renderer.revalidate();
-				initialize();
+				addButtons();
 				break;
 			}
 			break;
@@ -282,11 +284,12 @@ public class Game implements ActionListener, KeyListener {
 			renderer.setPreferredSize(new Dimension(frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE,
 					frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE));
 			GameData.FRAME_EXTENDED_WIDTH = (int) frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE;
-			GameData.FRAME_WIDTH = GameData.FRAME_EXTENDED_WIDTH - 140;
+			GameData.FRAME_WIDTH = GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_EXTRA_WIDTH;
 			GameData.FRAME_HEIGHT = (int) frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE;
 			GameData.TILE_WIDTH = GameData.FRAME_WIDTH / GameData.TILE_AMOUNT;
 			GameData.TILE_HEIGHT = GameData.FRAME_HEIGHT / GameData.TILE_AMOUNT;
 			GameData.TOOLBAR_SLOT_HEIGHT = GameData.FRAME_HEIGHT/GameData.TOOLBAR_SLOTS;
+			GameData.PLAYER_VELOCITY = (int) ((GameData.FRAME_WIDTH * GameData.FRAME_HEIGHT) / GameData.FRAME_SIZE_TO_VELOCITY);
 			GameData.rescaleAnimations();
 			explosionAnimation = new JLabel(GameData.explosionAnimation);
 			losingAnimation = new JLabel(GameData.losingAnimation);

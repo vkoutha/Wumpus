@@ -79,7 +79,7 @@ public class Tile {
 	public static void updateAffectedTiles() {
 		for(Tile[] tileArr : Game.game.getTiles()) {
 			for(Tile tile : tileArr) {
-				if(tile.isFlashlightAffected()) {
+				if(tile.isFlashlightAffectedCalc()) {
 					tile.setFlashlightAffected(true);
 				}else{
 					tile.setFlashlightAffected(false);
@@ -89,6 +89,10 @@ public class Tile {
 	}
 	
 	public boolean isFlashlightAffected() {
+		return isFlashlightAffected;
+	}
+	
+	private boolean isFlashlightAffectedCalc() {
 		for (int r = Player.getRow() - Toolbar.getFlashlightRadius(); r <= Player.getRow() + Toolbar.getFlashlightRadius(); r++) {
 			for(int c = Player.getColumn() - Toolbar.getFlashlightRadius(); c <= Player.getColumn() + Toolbar.getFlashlightRadius(); c++) {
 				if (row == r && column == c) {
@@ -105,7 +109,7 @@ public class Tile {
 	
 	public void render(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
-		g2.drawImage(GameData.grassSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH+1, GameData.TILE_HEIGHT, null);
+		 g2.drawImage(GameData.grassSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH+1, GameData.TILE_HEIGHT, null);
 		if(item != ItemTypes.NONE) {
 			g2.drawImage(itemSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		}
