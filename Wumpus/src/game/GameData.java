@@ -166,8 +166,8 @@ public class GameData {
 		try {
 			rockSprite = ImageIO.read(GameData.class.getResource("/img/tiles/rockTile.png"));
 			rockSprite = rockSprite.getSubimage(10, 10, rockSprite.getWidth()-20, rockSprite.getHeight()-20);
-			grassSprite = ImageIO.read(GameData.class.getResource("/img/tiles/grassTile.jpg"));
-			grassSprite = grassSprite.getSubimage(50, 50, grassSprite.getWidth()-70, grassSprite.getHeight()-80);
+			grassSprite = ImageIO.read(GameData.class.getResource("/img/tiles/grass.jpg"));
+			//grassSprite = grassSprite.getSubimage(50, 50, grassSprite.getWidth()-70, grassSprite.getHeight()-80);
 			litGrassSprite = grassSprite.getSubimage(50, 50, grassSprite.getWidth()-70,grassSprite.getHeight()-80);
 			float scaleFactor = (float) (1.0 + (.75 / 10.0)); //(1 + (brightnessScaleFactor /10))
 			RescaleOp op = new RescaleOp(scaleFactor, 0, null);

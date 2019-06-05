@@ -99,7 +99,6 @@ public class Toolbar {
 				break;
 			case COMPASS:
 		        drawCompass(g, i);
-
 				g.drawString("Uses: " + compassCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case GOLD:
