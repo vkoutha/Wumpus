@@ -138,19 +138,19 @@ public class Toolbar {
 		GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
 		//g.setFont(new Font("Arial", 15, Font.BOLD));
 		
-		int xDiff = Player.getRow() - Wumpus.getRow();
-		int yDiff = Player.getColumn() - Wumpus.getColumn(); 
-		double yVect = GameData.COMPASS_VECTOR_SCALE * (yDiff / Math.hypot(yDiff, xDiff));
-		double xVect = GameData.COMPASS_VECTOR_SCALE * (xDiff / Math.hypot(xDiff, yDiff));
+		int yDiff = Wumpus.getRow() - Player.getRow();
+		int xDiff = Wumpus.getColumn() - Player.getColumn(); 
+		double xVect = GameData.COMPASS_VECTOR_SCALE * (xDiff / Math.hypot(yDiff, xDiff));
+		double yVect = GameData.COMPASS_VECTOR_SCALE * (yDiff / Math.hypot(xDiff, yDiff));
 		if(xDiff == 0 && yDiff == 0) {
 			g2.setColor(Color.GREEN);
 		}else {
 			g2.setColor(Color.RED);
 		}
 		g2.setStroke(new BasicStroke(6));
-		g2.drawLine(GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2), -4 + (slot * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2), 
-				GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2) - (int) (yVect), 
-				(slot * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2) - (int) (xVect));
+		g2.drawLine(GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2), (slot * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2), 
+				GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2) + (int) (xVect), 
+				(slot * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2) + (int) (yVect));
 		
 	}
 	

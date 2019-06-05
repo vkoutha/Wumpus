@@ -16,6 +16,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,7 +35,6 @@ public class Game implements ActionListener, KeyListener {
 	private Tile[][] tiles;
 	private GameState gameState;
 	private JLabel explosionAnimation, losingAnimation, winningAnimation;
-	private JButton startGameButton, settingsMenuButton, rulesButton;
 	private Clip themePlayer;
 	private boolean explosionInProgress, battleInProgress;
 
@@ -43,7 +43,6 @@ public class Game implements ActionListener, KeyListener {
 		timer = new Timer(GameData.UPDATE_SPEED_MS, this);
 		renderer = new Renderer();
 		renderer.setPreferredSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
-		renderer.setLayout(new BoxLayout(renderer, BoxLayout.PAGE_AXIS));
 		renderer.setBackground(Color.LIGHT_GRAY);
 		frame.setMinimumSize(new Dimension(800, 800));
 		frame.add(renderer);
@@ -56,7 +55,7 @@ public class Game implements ActionListener, KeyListener {
 		initialize();
 		//startMusic(GameData.themeSong, true);
 		gameState = GameState.MENU;
-		addButtons();
+		addMenuWidgets();
 		timer.start();
 	}
 
@@ -94,8 +93,10 @@ public class Game implements ActionListener, KeyListener {
 	 	tiles[randRow][randCol].setItem(item);		
 	}
 	
-	private void addButtons() {
-		startGameButton = new JButton(GameData.startGameUnselectedIcon);
+	private void addMenuWidgets() {
+		renderer.revalidate();
+		renderer.setLayout(new BoxLayout(renderer, BoxLayout.PAGE_AXIS));
+		JButton startGameButton = new JButton(GameData.startGameUnselectedIcon);
 		startGameButton.setRolloverIcon(GameData.startGameSelectedIcon);
 		startGameButton.setFocusable(false);
 		GameData.removeBackground(startGameButton);
@@ -111,7 +112,7 @@ public class Game implements ActionListener, KeyListener {
 		renderer.add(Box.createVerticalStrut(GameData.wumpusLogo.getHeight()*2));
 		renderer.add(startGameButton);
 
-		settingsMenuButton = new JButton(GameData.settingsUnselectedIcon);
+		JButton settingsMenuButton = new JButton(GameData.settingsUnselectedIcon);
 		settingsMenuButton.setRolloverIcon(GameData.settingsSelectedIcon);
 		settingsMenuButton.setFocusable(false);
 		GameData.removeBackground(settingsMenuButton);
@@ -127,7 +128,7 @@ public class Game implements ActionListener, KeyListener {
 		renderer.add(Box.createVerticalStrut(GameData.VERTICAL_DISTANCE_BETWEEN_BUTTONS));
 		renderer.add(settingsMenuButton);
 		
-		rulesButton = new JButton(GameData.rulesUnselectedIcon);
+		JButton rulesButton = new JButton(GameData.rulesUnselectedIcon);
 		rulesButton.setRolloverIcon(GameData.rulesSelectedIcon);
 		rulesButton.setFocusable(false);
 		GameData.removeBackground(rulesButton);
@@ -144,6 +145,72 @@ public class Game implements ActionListener, KeyListener {
 		renderer.add(rulesButton);
 	}
 	
+	private void addPausedWidgets(){
+		addMenuWidgets();
+	}
+	
+	private void addSettingsWidgets(){
+		renderer.revalidate();
+		GroupLayout layout = new GroupLayout(renderer);
+		//JSlider for player speed
+		//JSlider for amount of tiles
+		//
+		renderer.setLayout(layout);
+	}
+	
+	public void render(Graphics g) {
+		switch(gameState) {
+		case MENU:
+			renderMenu(g);
+			break;
+		case SETTINGS:
+			renderSettings(g);
+			break;
+		case RULES:
+			renderRules(g);
+			break;
+		case PAUSED:
+			renderPaused(g);
+		case IN_GAME:
+			renderInGame(g);
+			break;
+		}
+	}
+	
+	private void renderMenu(Graphics g){
+		g.drawImage(GameData.menuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
+		g.drawImage(GameData.wumpusLogo, (GameData.FRAME_EXTENDED_WIDTH/2) - (GameData.wumpusLogo.getWidth()/2), 60, GameData.wumpusLogo.getWidth(), 
+				GameData.wumpusLogo.getHeight(), null);
+	}
+
+	
+	private void renderSettings(Graphics g){
+		g.drawImage(GameData.settingsMenuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
+	}
+	
+	private void renderRules(Graphics g){
+		
+	}
+	
+	private void renderPaused(Graphics g){
+		
+	}
+	
+	private void renderInGame(Graphics g){
+		for (Tile[] tileArr : tiles)
+			for (Tile tile : tileArr)
+				tile.render(g);
+		Player.render(g);
+		Toolbar.render(g);
+		if(gameState == GameState.PAUSED) {
+			g.setColor(Color.DARK_GRAY);
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setComposite(AlphaComposite.SrcOver.derive(.8f));
+			g2.fillRect(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+		}
+	}
+
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch(gameState) {
@@ -153,8 +220,8 @@ public class Game implements ActionListener, KeyListener {
 			switch(e.getKeyCode()) {
 			case KeyEvent.VK_ESCAPE:
 				gameState = GameState.MENU;
-				renderer.revalidate();
-				addButtons();
+				renderer.removeAll();
+				addMenuWidgets();
 				break;
 			}
 			break;
@@ -198,8 +265,7 @@ public class Game implements ActionListener, KeyListener {
 			case KeyEvent.VK_ESCAPE:
 				System.out.println(gameState);
 				gameState = GameState.PAUSED;
-				renderer.revalidate();
-				addButtons();
+				addMenuWidgets();
 				break;
 			}
 			break;
@@ -224,35 +290,6 @@ public class Game implements ActionListener, KeyListener {
 
 	}
 	
-	public void render(Graphics g) {
-		switch(gameState) {
-		case MENU:
-			g.drawImage(GameData.menuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
-			g.drawImage(GameData.wumpusLogo, (GameData.FRAME_EXTENDED_WIDTH/2) - (GameData.wumpusLogo.getWidth()/2), 60, GameData.wumpusLogo.getWidth(), 
-					GameData.wumpusLogo.getHeight(), null);
-			break;
-		case SETTINGS:
-			g.drawImage(GameData.settingsMenuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
-			break;
-		case RULES:
-			break;
-		case PAUSED:
-		case IN_GAME:
-			for (Tile[] tileArr : tiles)
-				for (Tile tile : tileArr)
-					tile.render(g);
-			Player.render(g);
-			Toolbar.render(g);
-			if(gameState == GameState.PAUSED) {
-				g.setColor(Color.DARK_GRAY);
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setComposite(AlphaComposite.SrcOver.derive(.8f));
-				g2.fillRect(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
-			}
-			break;
-		}
-	}
-
 	private void startMusic(AudioInputStream stream, boolean loop) { 
 		try {
 			if(themePlayer != null && themePlayer.getMicrosecondPosition() > 0) {
@@ -298,7 +335,7 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	public void explodeTile(int row, int column) {
-		frame.setResizable(false);
+		//frame.setResizable(false);
 		explosionInProgress = true;
 		explosionAnimation.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
 		renderer.add(explosionAnimation);
