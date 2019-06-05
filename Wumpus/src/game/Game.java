@@ -67,8 +67,6 @@ public class Game implements ActionListener, KeyListener {
 				tiles[r][c] = new Tile(r, c);
 			}
 		}
-		Toolbar.addItem(ItemTypes.COMPASS);
-		Toolbar.addItem(ItemTypes.FLASHLIGHT);
 		tiles[0][0].setDiscovered(true);
 		initItems();
 		explosionAnimation = new JLabel(GameData.explosionAnimation);
@@ -315,7 +313,6 @@ public class Game implements ActionListener, KeyListener {
 				frame.setResizable(true);
 			}
 		}).start();
-		Toolbar.removeItem(ItemTypes.EXPLOSIVE);
 		tiles[row][column].setDiscovered(true);
 		tiles[row][column].setItem(ItemTypes.NONE);
 	}

@@ -15,12 +15,14 @@ public class Tile {
 	private boolean isDiscovered, isFlashlightAffected;
 	private ItemTypes item;
 	private BufferedImage itemSprite;
+	private AlphaComposite maxOpacity;
 	
 	public Tile(int row, int column) {
 		this.row = row;
 		this.column = column;	
 		item = ItemTypes.NONE;
 		//isDiscovered = true;
+		maxOpacity = AlphaComposite.SrcOver.derive(1f);
 	} 
 	
 	public int getRow() {
@@ -109,18 +111,20 @@ public class Tile {
 	
 	public void render(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
-		 g2.drawImage(GameData.grassSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH+1, GameData.TILE_HEIGHT, null);
-		if(item != ItemTypes.NONE) {
-			g2.drawImage(itemSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+		if(isDiscovered || isFlashlightAffected) {
+			g2.drawImage(GameData.grassSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH+1, GameData.TILE_HEIGHT, null);
+			if(item != ItemTypes.NONE) {
+				g2.drawImage(itemSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+			}
 		}
 		if(row == Wumpus.getRow() && column == Wumpus.getColumn()) {
 			g2.setComposite(AlphaComposite.SrcOver.derive(Wumpus.getOpacity()));
 			g2.drawImage(GameData.wumpusSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
-			g2.setComposite(AlphaComposite.SrcOver.derive(1f));
+			g2.setComposite(maxOpacity);
 		}
 		if(!isDiscovered) {
 			if(Toolbar.getFlashlightRadius() > 0 && isFlashlightAffected) {
-				g2.setComposite(AlphaComposite.SrcOver.derive(GameData.FLASHLIGHT_BLOCK_OPACITY));
+				g2.setComposite(GameData.FLASHLIGHT_BLOCK_OPACITY);
 			}
 			g2.drawImage(GameData.rockSprite, (column*GameData.TILE_WIDTH), (row*GameData.TILE_HEIGHT), GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		}

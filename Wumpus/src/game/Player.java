@@ -17,7 +17,7 @@ public class Player {
 	private static BufferedImage[] spritesToUse = GameData.characterBackwardsSprite;
 
 	static {
-		new Timer(200, new ActionListener() {
+		new Timer(GameData.SPRITE_UPDATE_SPEED_MS, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -81,7 +81,7 @@ public class Player {
 	public static void updatePos() {
 		if (GameData.within(x, GameData.TILE_WIDTH * column) && GameData.within(y, GameData.TILE_HEIGHT * row) ) {
 			finalizeMovement(); 
-		}else{ 
+		}else{
 			if(!GameData.within(x, GameData.TILE_WIDTH * column)){ 
 				if (x < GameData.TILE_WIDTH * column) {
 					x += GameData.PLAYER_VELOCITY;
@@ -137,6 +137,7 @@ public class Player {
 		} else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
 			Game.game.explodeTile(row, column + 1);
 		}
+		Toolbar.removeItem(ItemTypes.EXPLOSIVE);
 	}
 	
 	public static void setSuperSayain(boolean superSayain) {

@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.AlphaComposite;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -21,6 +22,7 @@ public class GameData {
 	public static int FRAME_WIDTH_DIFFERENCE = 0;
 	public static int FRAME_HEIGHT_DIFFERENCE = 0;
 	public static final int UPDATE_SPEED_MS = 30;
+	public static final int SPRITE_UPDATE_SPEED_MS = 200;
 	public static final int EXPLOSION_ANIMATION_TIME_MS = 1500;
 	
 	public static final int VERTICAL_DISTANCE_BETWEEN_BUTTONS = 20;
@@ -36,9 +38,13 @@ public class GameData {
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
 	public static final int TOOLBAR_ITEM_PROPORTION = 5;
 	
-	public static final float FLASHLIGHT_BLOCK_OPACITY = 0.7f;
+	public static final int COMPASS_VECTOR_SCALE = 13;
+	
 	public static final float WUMPUS_FADE_SPEED = .04f;
 
+	public static final AlphaComposite MAX_OPACITY = AlphaComposite.SrcOver.derive(1f);
+	public static final AlphaComposite FLASHLIGHT_BLOCK_OPACITY = AlphaComposite.SrcOver.derive(.7f);
+	
 	public static AudioInputStream themeSong, battleSong;
 	
 	public static BufferedImage wumpusLogo, menuBackground, settingsMenuBackground;
@@ -47,7 +53,7 @@ public class GameData {
 	public static BufferedImage[] characterBackwardsSprite, characterForwardsSprite, characterLeftSprite, characterRightSprite;
 	public static BufferedImage[] superSayainBackwardsSprite, superSayainForwardsSprite, superSayainLeftSprite, superSayainRightSprite;
 	public static BufferedImage toolbarBox;
-	public static BufferedImage flashlightSprite, compassSprite, goldSprite, explosiveSprite, swordSprite;
+	public static BufferedImage flashlightSprite, compassSprite, blankCompassSprite, goldSprite, explosiveSprite, swordSprite;
 	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
 			rulesSelectedIcon;
 	private static Image explosionAnimationImage, losingAnimationImage, winningAnimationImage;
@@ -188,6 +194,7 @@ public class GameData {
 			toolbarBox = ImageIO.read(GameData.class.getResource("/img/items/toolbarBox.png"));
 			flashlightSprite = ImageIO.read(GameData.class.getResource("/img/items/flashlightSprite.png")); 
 			compassSprite = ImageIO.read(GameData.class.getResource("/img/items/compassSprite.png"));
+			blankCompassSprite = ImageIO.read(GameData.class.getResource("/img/items/blankCompassSprite.png"));
 			//goldSprite = ImageIO.read(GameData.class.getResource("/img/items/goldSprite.png"));
 			explosiveSprite = ImageIO.read(GameData.class.getResource("/img/items/explosiveSprite.png"));
 			swordSprite = ImageIO.read(GameData.class.getResource("/img/items/swordSprite.png"));
