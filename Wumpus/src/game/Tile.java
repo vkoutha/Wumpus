@@ -83,6 +83,7 @@ public class Tile {
 			for(Tile tile : tileArr) {
 				if(tile.isFlashlightAffectedCalc()) {
 					tile.setFlashlightAffected(true);
+					tile.setDiscovered(true);
 				}else{
 					tile.setFlashlightAffected(false);
 				}
@@ -97,13 +98,13 @@ public class Tile {
 	private boolean isFlashlightAffectedCalc() {
 		for (int r = Player.getRow() - Toolbar.getFlashlightRadius(); r <= Player.getRow() + Toolbar.getFlashlightRadius(); r++) {
 			for(int c = Player.getColumn() - Toolbar.getFlashlightRadius(); c <= Player.getColumn() + Toolbar.getFlashlightRadius(); c++) {
-				if (row == r && column == c) {
-					return true;
-				}
-				//Uncomment to not include diagonals
-//				if((row == r && column == player.getColumn()) || (column == c && row == player.getRow())) {
+//				if (row == r && column == c) {
 //					return true;
 //				}
+				//Uncomment to not include diagonals
+				if((row == r && column == Player.getColumn()) || (column == c && row == Player.getRow())) {
+					return true;
+				}
 			}
 		}
 		return false;
