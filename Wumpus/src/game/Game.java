@@ -17,6 +17,7 @@ import javax.sound.sampled.Clip;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,7 +35,7 @@ public class Game implements ActionListener, KeyListener {
 	private Renderer renderer;
 	private Tile[][] tiles;
 	private GameState gameState;
-	private JLabel explosionAnimation, losingAnimation, winningAnimation;
+	private JLabel explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
 	private Clip themePlayer;
 	private boolean explosionInProgress, battleInProgress;
 
@@ -69,6 +70,7 @@ public class Game implements ActionListener, KeyListener {
 		tiles[0][0].setDiscovered(true);
 		initItems();
 		explosionAnimation = new JLabel(GameData.explosionAnimation);
+		ultimateExplosionAnimation = new JLabel(GameData.ultimateExplosionAnimation);
 		losingAnimation = new JLabel(GameData.losingAnimation);
 		winningAnimation = new JLabel(GameData.winningAnimation);
 		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_EXTENDED_WIDTH;
@@ -154,7 +156,7 @@ public class Game implements ActionListener, KeyListener {
 		GroupLayout layout = new GroupLayout(renderer);
 		//JSlider for player speed
 		//JSlider for amount of tiles
-		//
+		//JSlider for amount of flashlights
 		renderer.setLayout(layout);
 	}
 	
@@ -250,10 +252,14 @@ public class Game implements ActionListener, KeyListener {
 					Player.shoot();    
 				}
 				break;
+			case KeyEvent.VK_X:
+				if(!explosionInProgress) {
+					Player.attack();
+				}
 			case KeyEvent.VK_Z:
 				if(tiles[Player.getRow()][Player.getColumn()].getItem() != ItemTypes.NONE) {
 					Toolbar.addItem(tiles[Player.getRow()][Player.getColumn()].getItem());
-					Tile.updateAffectedTiles();
+					Tile.updateTiles();
 					tiles[Player.getRow()][Player.getColumn()].removeItem();
 				}
 				break;
@@ -309,6 +315,7 @@ public class Game implements ActionListener, KeyListener {
 
 	private void update() {
 		updateSize();
+		Tile.updateTilesOpacity();
 		Player.updatePos();
 		Wumpus.updateFadeMove();
 	}
@@ -327,6 +334,7 @@ public class Game implements ActionListener, KeyListener {
 			GameData.PLAYER_VELOCITY = (int) ((GameData.FRAME_WIDTH * GameData.FRAME_HEIGHT) / GameData.FRAME_SIZE_TO_VELOCITY);
 			GameData.rescaleAnimations();
 			explosionAnimation = new JLabel(GameData.explosionAnimation);
+			ultimateExplosionAnimation = new JLabel(GameData.ultimateExplosionAnimation);
 			losingAnimation = new JLabel(GameData.losingAnimation);
 			winningAnimation = new JLabel(GameData.winningAnimation);
 			Player.setXPos(Player.getColumn() * GameData.TILE_WIDTH);
@@ -334,21 +342,34 @@ public class Game implements ActionListener, KeyListener {
 		}
 	}
 	
-	public void explodeTile(int row, int column) {
+	public void explodeTile(final int row, final int column, final ImageIcon animationToUse) {
 		//frame.setResizable(false);
 		explosionInProgress = true;
-		explosionAnimation.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
-		renderer.add(explosionAnimation);
+		final JLabel animation;
+		if(animationToUse == GameData.explosionAnimation) {
+			animation = explosionAnimation;
+		}else {
+			animation = ultimateExplosionAnimation;
+		}
+		animation.setBounds(column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT);
+		renderer.add(animation);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				long startTime = System.currentTimeMillis();
-				while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS) {
+				if(animation == explosionAnimation) {
+					while(System.currentTimeMillis() - startTime < GameData.EXPLOSION_ANIMATION_TIME_MS) {
+						tiles[row][column].setOpacity(0f); 
+					}
+				}else {
+					while(System.currentTimeMillis() - startTime < GameData.ULTIMATE_EXPLOSION_ANIMATION_TIME_MS) {
+						tiles[row][column].setOpacity(0f); 
+					}
 				}
-				renderer.remove(explosionAnimation);
+				renderer.remove(animation);
 				explosionInProgress = false;
 				frame.setResizable(true);
-			}
+			} 
 		}).start();
 		tiles[row][column].setDiscovered(true);
 		tiles[row][column].setItem(ItemTypes.NONE);

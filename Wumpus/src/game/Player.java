@@ -99,7 +99,7 @@ public class Player {
 	}
 	
 	private static void finalizeMovement() {
-		Tile.updateAffectedTiles();
+		Tile.updateTiles();
 //		if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
 //			battleWumpus();
 //		}
@@ -126,16 +126,23 @@ public class Player {
 			}
 		}
 	}
+	
+	public static void attack() {
+		if(isSuperSayain && Game.game.getTiles()[Wumpus.getRow()][Wumpus.getColumn()].isFlashlightAffected() 
+				&& isFacing(Wumpus.getRow(), Wumpus.getColumn())) {
+			Game.game.explodeTile(Wumpus.getRow(), Wumpus.getColumn(), GameData.ultimateExplosionAnimation);
+		}
+	}
 
 	public static void shoot() {
 		if (movementDirection == MovementDirections.UP && row > 0) {
-			Game.game.explodeTile(row - 1, column);
+			Game.game.explodeTile(row - 1, column, GameData.explosionAnimation);
 		} else if (movementDirection == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
-			Game.game.explodeTile(row + 1, column);
+			Game.game.explodeTile(row + 1, column, GameData.explosionAnimation);
 		} else if (movementDirection == MovementDirections.LEFT && column > 0) {
-			Game.game.explodeTile(row, column - 1);
+			Game.game.explodeTile(row, column - 1, GameData.explosionAnimation);
 		} else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
-			Game.game.explodeTile(row, column + 1);
+			Game.game.explodeTile(row, column + 1, GameData.explosionAnimation);
 		}
 		Toolbar.removeItem(ItemTypes.EXPLOSIVE);
 	}
@@ -144,7 +151,7 @@ public class Player {
 		isSuperSayain = superSayain;
 		if(superSayain == true) {
 			setSprite(movementDirection);
-			Game.game.explodeTile(row, column);
+			Game.game.explodeTile(row, column, GameData.ultimateExplosionAnimation);
 		}
 	}
 	
@@ -170,6 +177,27 @@ public class Player {
 	
 	public static int getYPos() {
 		return y;
+	}
+	
+	private static boolean isFacing(int row, int column) {
+		if(row > Player.row) {
+			if(movementDirection == MovementDirections.DOWN) {
+				return true;
+			}
+		}else if (row < Player.row) {
+			if(movementDirection == MovementDirections.UP) {
+				return true;
+			}
+		}else if (column > Player.column) {
+			if(movementDirection == MovementDirections.RIGHT) {
+				return true;
+			}
+		}else if(column < Player.column) {
+			if(movementDirection == MovementDirections.LEFT) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static void render(Graphics g) {

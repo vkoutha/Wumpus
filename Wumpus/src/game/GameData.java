@@ -24,6 +24,7 @@ public class GameData {
 	public static final int UPDATE_SPEED_MS = 30;
 	public static final int SPRITE_UPDATE_SPEED_MS = 200;
 	public static final int EXPLOSION_ANIMATION_TIME_MS = 1500;
+	public static final int ULTIMATE_EXPLOSION_ANIMATION_TIME_MS = 1200;
 	
 	public static final int VERTICAL_DISTANCE_BETWEEN_BUTTONS = 20;
 	
@@ -39,8 +40,11 @@ public class GameData {
 	public static final int TOOLBAR_ITEM_PROPORTION = 5;
 	
 	public static final int COMPASS_VECTOR_SCALE = 13;
+	public static final int COMPASS_NEEDLE_VERTICAL_SHIFT = -5;
 	
 	public static final float WUMPUS_FADE_SPEED = .04f;
+	public static final float TILE_BRIGHTENING_SPEED = .05f;
+	public static final float TILE_DIMMING_SPEED = .015f;
 
 	public static final AlphaComposite MAX_OPACITY = AlphaComposite.SrcOver.derive(1f);
 	public static final AlphaComposite FLASHLIGHT_BLOCK_OPACITY = AlphaComposite.SrcOver.derive(.7f);
@@ -56,8 +60,8 @@ public class GameData {
 	public static BufferedImage flashlightSprite, compassSprite, blankCompassSprite, goldSprite, explosiveSprite, swordSprite;
 	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
 			rulesSelectedIcon;
-	private static Image explosionAnimationImage, losingAnimationImage, winningAnimationImage;
-	public static ImageIcon explosionAnimation, losingAnimation, winningAnimation;
+	private static Image explosionAnimationImage, ultimateExplosionAnimationImage, losingAnimationImage, winningAnimationImage;
+	public static ImageIcon explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
 	
 	static {
 		initMusic();
@@ -166,8 +170,8 @@ public class GameData {
 		try {
 			rockSprite = ImageIO.read(GameData.class.getResource("/img/tiles/rockTile.png"));
 			rockSprite = rockSprite.getSubimage(10, 10, rockSprite.getWidth()-20, rockSprite.getHeight()-20);
-			grassSprite = ImageIO.read(GameData.class.getResource("/img/tiles/grass.jpg"));
-			//grassSprite = grassSprite.getSubimage(50, 50, grassSprite.getWidth()-70, grassSprite.getHeight()-80);
+			grassSprite = ImageIO.read(GameData.class.getResource("/img/tiles/grassTile.jpg"));
+			grassSprite = grassSprite.getSubimage(50, 50, grassSprite.getWidth()-70, grassSprite.getHeight()-80);
 			litGrassSprite = grassSprite.getSubimage(50, 50, grassSprite.getWidth()-70,grassSprite.getHeight()-80);
 			float scaleFactor = (float) (1.0 + (.75 / 10.0)); //(1 + (brightnessScaleFactor /10))
 			RescaleOp op = new RescaleOp(scaleFactor, 0, null);
@@ -181,6 +185,9 @@ public class GameData {
 		explosionAnimation = new ImageIcon(GameData.class.getResource("/img/animations/explosionAnimation.gif"));
 		explosionAnimationImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
 		explosionAnimation = new ImageIcon(explosionAnimationImage);
+		ultimateExplosionAnimation = new ImageIcon(GameData.class.getResource("/img/animations/ultimateExplosion.gif"));
+		ultimateExplosionAnimationImage = ultimateExplosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
+		ultimateExplosionAnimation = new ImageIcon(ultimateExplosionAnimationImage);
 		losingAnimation = new ImageIcon(GameData.class.getResource("/img/animations/losingAnimation.gif"));
 		losingAnimationImage = losingAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
 		losingAnimation = new ImageIcon(losingAnimationImage);
