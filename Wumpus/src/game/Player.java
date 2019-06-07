@@ -32,6 +32,7 @@ public class Player {
 	}
 
 	public static void move(MovementDirections direction) {
+		Game.game.getTiles()[row][column].setOpacity(0);
 		if (!moving) {
 			if(direction != movementDirection) {
 				setSprite(direction);

@@ -15,20 +15,21 @@ import javax.swing.JButton;
 public class GameData {
 	
 	public static final String FRAME_NAME = "Wumpus";
-	public static int FRAME_EXTENDED_WIDTH = 940;
-	public static int FRAME_WIDTH = 800;
+	public static final int TILE_AMOUNT = 8;
+	public static int FRAME_WIDTH = 600 + (600 % TILE_AMOUNT);
+	public static int FRAME_EXTENDED_WIDTH = FRAME_WIDTH + 140;
 	public static int FRAME_EXTRA_WIDTH = FRAME_EXTENDED_WIDTH - FRAME_WIDTH;
-	public static int FRAME_HEIGHT = 800;
+	public static int FRAME_HEIGHT = 650 ;
+	
 	public static int FRAME_WIDTH_DIFFERENCE = 0;
 	public static int FRAME_HEIGHT_DIFFERENCE = 0;
 	public static final int UPDATE_SPEED_MS = 30;
-	public static final int SPRITE_UPDATE_SPEED_MS = 200;
+	public static final int SPRITE_UPDATE_SPEED_MS = 150;
 	public static final int EXPLOSION_ANIMATION_TIME_MS = 1500;
 	public static final int ULTIMATE_EXPLOSION_ANIMATION_TIME_MS = 1200;
 	
 	public static final int VERTICAL_DISTANCE_BETWEEN_BUTTONS = 20;
 	
-	public static final int TILE_AMOUNT = 8;
 	public static int TILE_WIDTH = (FRAME_WIDTH/TILE_AMOUNT);
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/TILE_AMOUNT);
 	
@@ -44,7 +45,7 @@ public class GameData {
 	
 	public static final float WUMPUS_FADE_SPEED = .04f;
 	public static final float TILE_BRIGHTENING_SPEED = .05f;
-	public static final float TILE_DIMMING_SPEED = .015f;
+	public static final float TILE_DIMMING_SPEED = .02f;
 
 	public static final AlphaComposite MAX_OPACITY = AlphaComposite.SrcOver.derive(1f);
 	public static final AlphaComposite FLASHLIGHT_BLOCK_OPACITY = AlphaComposite.SrcOver.derive(.7f);

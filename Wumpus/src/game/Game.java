@@ -45,7 +45,7 @@ public class Game implements ActionListener, KeyListener {
 		renderer = new Renderer();
 		renderer.setPreferredSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
 		renderer.setBackground(Color.LIGHT_GRAY);
-		frame.setMinimumSize(new Dimension(800, 800));
+		frame.setMinimumSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
 		frame.add(renderer);
 		frame.addKeyListener(this);
 		frame.setResizable(true);
