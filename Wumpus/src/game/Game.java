@@ -21,6 +21,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -123,7 +124,9 @@ public class Game implements ActionListener, KeyListener {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				gameState = GameState.SETTINGS;
+				renderer.setLayout(null);
 				renderer.removeAll();
+				addSettingsWidgets();
 			}
 		});
 		settingsMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -153,11 +156,27 @@ public class Game implements ActionListener, KeyListener {
 	
 	private void addSettingsWidgets(){
 		renderer.revalidate();
+		JSlider tileAmountSlider = new JSlider(3, 50);
+		JLabel tileAmountLbl = new JLabel("Tile array: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
+		JLabel tileAmontLbl = new JLabel("Hello");
+//		JLabel playerSpeedLbl = new JLabel();
+//		JSlider playerSpeedSlider = new JSlider();
+//		
+//		JLabel flashlightAmountLbl = new JLabel();
+//		JSlider flashlightAmountSlider = new JSlider();
+//		
 		GroupLayout layout = new GroupLayout(renderer);
+		renderer.setLayout(layout);
+//		layout.setAutoCreateGaps(true);
+//		layout.setAutoCreateContainerGaps(true);
+		layout.setHorizontalGroup(layout.createSequentialGroup()
+			.addComponent(tileAmontLbl)    
+			.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING))
+		);
+
 		//JSlider for player speed
 		//JSlider for amount of tiles
 		//JSlider for amount of flashlights
-		renderer.setLayout(layout);
 	}
 	
 	public void render(Graphics g) {
@@ -187,7 +206,7 @@ public class Game implements ActionListener, KeyListener {
 
 	
 	private void renderSettings(Graphics g){
-		g.drawImage(GameData.settingsMenuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
+	//	g.drawImage(GameData.settingsMenuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
 	}
 	
 	private void renderRules(Graphics g){
