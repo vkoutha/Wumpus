@@ -1,30 +1,5 @@
 package game;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JSlider;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
 import game.GameData.GameState;
 import game.GameData.ItemTypes;
 
@@ -49,7 +24,7 @@ public class Game implements ActionListener, KeyListener {
 		frame.setMinimumSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
 		frame.add(renderer);
 		frame.addKeyListener(this);
-		frame.setResizable(true);
+		frame.setResizable(false);
 		frame.setVisible(true);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
@@ -157,22 +132,77 @@ public class Game implements ActionListener, KeyListener {
 	private void addSettingsWidgets(){
 		renderer.revalidate();
 		JSlider tileAmountSlider = new JSlider(3, 50);
+		tileAmountSlider.setValue(8);
 		JLabel tileAmountLbl = new JLabel("Tile array: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
-		JLabel tileAmontLbl = new JLabel("Hello");
-//		JLabel playerSpeedLbl = new JLabel();
-//		JSlider playerSpeedSlider = new JSlider();
-//		
+		tileAmountSlider.setOpaque(false);
+		tileAmountSlider.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - tileAmountSlider.getPreferredSize().getWidth()/2),
+				(GameData.FRAME_HEIGHT/5),
+				(int) tileAmountSlider.getPreferredSize().getWidth(), 
+				(int) tileAmountSlider.getPreferredSize().getHeight()
+		);
+		tileAmountLbl.setFont(new Font("Arial", Font.BOLD , 18));
+		tileAmountLbl.setForeground(Color.WHITE);
+		tileAmountLbl.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - tileAmountLbl.getPreferredSize().getWidth()/2),
+				(GameData.FRAME_HEIGHT/5) - 50,
+				(int) 500, 
+				(int) tileAmountLbl.getPreferredSize().getHeight()
+		);
+		tileAmountSlider.addChangeListener(new ChangeListener() {
+			@Override	
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				tileAmountLbl.setBounds(
+						(int) (GameData.FRAME_EXTENDED_WIDTH/2 - tileAmountLbl.getPreferredSize().getWidth()/2),
+						(GameData.FRAME_HEIGHT/5) - 50,
+						(int) 500, 
+						(int) tileAmountLbl.getPreferredSize().getHeight()
+				);
+				tileAmountLbl.setText("Tile array: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
+			}
+		});
+		
+		JSlider playerSpeedSlider = new JSlider(1, 20);
+		playerSpeedSlider.setValue(5);
+		JLabel playerSpeedLbl = new JLabel("Player speed: " + playerSpeedSlider.getValue() + " m/s");
+		playerSpeedSlider.setOpaque(false);
+		playerSpeedSlider.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - playerSpeedSlider.getPreferredSize().getWidth()/2),
+				(2*GameData.FRAME_HEIGHT/5),
+				(int) playerSpeedSlider.getPreferredSize().getWidth(), 
+				(int) playerSpeedSlider.getPreferredSize().getHeight()
+		);
+		playerSpeedLbl.setFont(new Font("Arial", Font.BOLD , 18));
+		playerSpeedLbl.setForeground(Color.WHITE);
+		playerSpeedLbl.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - playerSpeedLbl.getPreferredSize().getWidth()/2),
+				(2*GameData.FRAME_HEIGHT/5) - 50,
+				(int) playerSpeedLbl.getPreferredSize().getWidth(), 
+				(int) playerSpeedLbl.getPreferredSize().getHeight()
+		);
+		playerSpeedSlider.addChangeListener(new ChangeListener() {
+			@Override	
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				playerSpeedLbl.setBounds(
+						(int) (GameData.FRAME_EXTENDED_WIDTH/2 - playerSpeedLbl.getPreferredSize().getWidth()/2),
+						(2*GameData.FRAME_HEIGHT/5) - 50,
+						(int) playerSpeedLbl.getPreferredSize().getWidth(), 
+						(int) playerSpeedLbl.getPreferredSize().getHeight()
+				);
+				playerSpeedLbl.setText("Player speed: " + playerSpeedSlider.getValue() + " m/s");
+			}
+		});
+		
 //		JLabel flashlightAmountLbl = new JLabel();
 //		JSlider flashlightAmountSlider = new JSlider();
 //		
-		GroupLayout layout = new GroupLayout(renderer);
-		renderer.setLayout(layout);
-//		layout.setAutoCreateGaps(true);
-//		layout.setAutoCreateContainerGaps(true);
-		layout.setHorizontalGroup(layout.createSequentialGroup()
-			.addComponent(tileAmontLbl)    
-			.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING))
-		);
+		renderer.setLayout(null);
+		renderer.add(tileAmountSlider);
+		renderer.add(tileAmountLbl);
+		renderer.add(playerSpeedSlider);
+		renderer.add(playerSpeedLbl);
 
 		//JSlider for player speed
 		//JSlider for amount of tiles
@@ -206,7 +236,7 @@ public class Game implements ActionListener, KeyListener {
 
 	
 	private void renderSettings(Graphics g){
-	//	g.drawImage(GameData.settingsMenuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
+		g.drawImage(GameData.settingsMenuBackground, 0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT, null);
 	}
 	
 	private void renderRules(Graphics g){
