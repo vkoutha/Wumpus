@@ -8,13 +8,14 @@ import java.util.ArrayList;
 
 import game.GameData.GameState;
 import game.GameData.ItemTypes;
+import game.GameData.TrackingOptions;
 
 public class Toolbar {
 
-	
 	private static int flashlightCount, compassCount, explosiveCount, goldCount, swordCount;
 	private static ArrayList<ItemTypes> items = new ArrayList<ItemTypes>();
-	
+	private static TrackingOptions itemToTrack;
+
 	public static void addItem(ItemTypes item) {
 		if(item == ItemTypes.FLASHLIGHT) {
 			if(flashlightCount == 0) {
@@ -24,7 +25,7 @@ public class Toolbar {
 		}else if(item == ItemTypes.COMPASS) {
 			if(compassCount == 0) {
 				items.add(ItemTypes.COMPASS);
-				
+				Game.game.setInCompassMenu(true);
 			}
 			compassCount++;
 		}else if (item == ItemTypes.EXPLOSIVE) {
@@ -44,6 +45,13 @@ public class Toolbar {
 		}
 	}
 	
+	public static boolean compassAvailable() {
+		if(compassCount > 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	public static boolean weaponAvailable() {
 		if(swordCount > 0) {
 			return true;
@@ -61,7 +69,6 @@ public class Toolbar {
 			compassCount--;
 			if(compassCount == 0) {
 				items.remove(ItemTypes.COMPASS);
-				Game.game.setGameState(GameState.COMPASS_MENU);
 			}
 		}else if (item == ItemTypes.EXPLOSIVE) {
 			explosiveCount--;
@@ -76,12 +83,26 @@ public class Toolbar {
 		}
 	}
 	
+	public static void setTrackingItem(TrackingOptions item) {
+		itemToTrack = item;
+	}
+	
 	public static void removeAll() {
 		items.clear();
+		itemToTrack = null;
 		flashlightCount = 0;
 		compassCount = 0;
 		explosiveCount = 0;
 		goldCount = 0;
+	}
+	
+	public static int getItemSlot(ItemTypes item) {
+		for(int i = 0; i < items.size(); i++) {
+			if(items.get(i) == item) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	public static int getExplosiveCount() {
@@ -90,6 +111,41 @@ public class Toolbar {
 	
 	public static int getFlashlightRadius() {
 		return flashlightCount;
+	}
+	
+	public static int[] getTrackingItemCoordinate() {
+		switch(itemToTrack) {
+		case WUMPUS:
+			return new int[] {Wumpus.getRow(), Wumpus.getColumn()};
+		case FLASHLIGHT:
+			for(int r = 0; r < GameData.BOARD_SIZE; r++) {
+				for(int c = 0; c < GameData.BOARD_SIZE; c++) {
+					if(Game.game.getTiles()[r][c].getItem() == ItemTypes.FLASHLIGHT) {
+						return new int[] {r, c};
+					}
+				}
+			}
+			break;
+		case SWORD:
+			for(int r = 0; r < GameData.BOARD_SIZE; r++) {
+				for(int c = 0; c < GameData.BOARD_SIZE; c++) {
+					if(Game.game.getTiles()[r][c].getItem() == ItemTypes.SWORD) {
+						return new int[] {r, c};
+					}
+				}
+			}
+			break;
+		case EXPLOSIVE:
+			for(int r = 0; r < GameData.BOARD_SIZE; r++) {
+				for(int c = 0; c < GameData.BOARD_SIZE; c++) {
+					if(Game.game.getTiles()[r][c].getItem() == ItemTypes.EXPLOSIVE) {
+						return new int[] {r, c};
+					}
+				}
+			}
+			break;
+		}
+		return new int[] {-1, -1};
 	}
 	
 	public static void render(Graphics g) {
@@ -109,7 +165,9 @@ public class Toolbar {
 				g.drawString("x" + flashlightCount, GameData.FRAME_WIDTH + 5, (i * GameData.TOOLBAR_SLOT_HEIGHT) + 20);
 				break;
 			case COMPASS:
-		        drawCompass(g, i);
+				if(Game.game.inCompassMenu() == false) {
+					drawCompass(g, i);
+				}
 				g.drawString("Uses: " + compassCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case GOLD:
@@ -147,12 +205,16 @@ public class Toolbar {
 		(slot * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
 		GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
 		GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
-		int yDiff = Wumpus.getRow() - Player.getRow();
-		int xDiff = Wumpus.getColumn() - Player.getColumn(); 
+		int yDiff = getTrackingItemCoordinate()[0] - Player.getRow();
+		int xDiff = getTrackingItemCoordinate()[1] - Player.getColumn(); 
 		double xVect = GameData.COMPASS_VECTOR_SCALE * (xDiff / Math.hypot(yDiff, xDiff));
 		double yVect = GameData.COMPASS_VECTOR_SCALE * (yDiff / Math.hypot(xDiff, yDiff));
 		if(xDiff == 0 && yDiff == 0) {
 			g2.setColor(Color.GREEN);
+		}else if(getTrackingItemCoordinate()[0] == -1 && getTrackingItemCoordinate()[0] == -1) {
+			xVect = 0;
+			yVect = 0;
+			g2.setColor(Color.ORANGE);
 		}else {
 			g2.setColor(Color.RED);
 		}

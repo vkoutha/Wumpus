@@ -37,12 +37,16 @@ public class GameData {
 	public static final double FRAME_SIZE_TO_VELOCITY = (FRAME_WIDTH * FRAME_HEIGHT) / PLAYER_VELOCITY;
 	
 	public static final int TOOLBAR_SLOTS = 4;
+	public static final int TOOLBAR_FRAME_WIDTH = 22;
+	public static final int TOOLBAR_FRAME_HEIGHT = 26;
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
 	public static final int TOOLBAR_ITEM_PROPORTION = 5;
 	public static int FLASHLIGHT_AMOUNT = 1;
 	
 	public static final int COMPASS_VECTOR_SCALE = 13;
 	public static final int COMPASS_NEEDLE_VERTICAL_SHIFT = -5;
+	public static final int MINI_COMPASS_BUTTONS_WIDTH = (FRAME_EXTENDED_WIDTH - TOOLBAR_FRAME_WIDTH) - (FRAME_WIDTH + FRAME_EXTRA_WIDTH/2);
+	public static final int MINI_COMPASS_BUTTONS_HEIGHT = (GameData.TOOLBAR_SLOT_HEIGHT - GameData.TOOLBAR_FRAME_HEIGHT) - (GameData.TOOLBAR_SLOT_HEIGHT/2);
 	
 	public static final float WUMPUS_FADE_SPEED = .04f;
 	public static final float TILE_BRIGHTENING_SPEED = .05f;
@@ -72,6 +76,7 @@ public class GameData {
 		initCharacterSprites();
 		initTileSprites();
 		initItemSprites();
+		initButtonImages();
 		initAnimations();
 	}
 	
@@ -222,10 +227,10 @@ public class GameData {
 	}
 	
 	private static void initButtonImages(){
-		wumpusButtonIcon = new ImageIcon(wumpusSprite);
-		flashlightButtonIcon = new ImageIcon(flashlightSprite);
-		swordButtonIcon = new ImageIcon(swordSprite);
-		explosiveButtonIcon = new ImageIcon(explosiveSprite);
+		wumpusButtonIcon = new ImageIcon(wumpusSprite.getScaledInstance(MINI_COMPASS_BUTTONS_WIDTH, MINI_COMPASS_BUTTONS_HEIGHT, Image.SCALE_DEFAULT));
+		flashlightButtonIcon = new ImageIcon(flashlightSprite.getScaledInstance(MINI_COMPASS_BUTTONS_WIDTH, MINI_COMPASS_BUTTONS_HEIGHT, Image.SCALE_DEFAULT));
+		swordButtonIcon = new ImageIcon(swordSprite.getScaledInstance(MINI_COMPASS_BUTTONS_WIDTH, MINI_COMPASS_BUTTONS_HEIGHT, Image.SCALE_DEFAULT));
+		explosiveButtonIcon = new ImageIcon(explosiveSprite.getScaledInstance(MINI_COMPASS_BUTTONS_WIDTH, MINI_COMPASS_BUTTONS_HEIGHT, Image.SCALE_DEFAULT));
 	}
 	
 	public static void removeBackground(JButton button) {
@@ -261,7 +266,6 @@ public class GameData {
 		SETTINGS,
 		RULES,
 		IN_GAME,
-		COMPASS_MENU,
 		PAUSED
 	}
 	
@@ -279,6 +283,13 @@ public class GameData {
 		EXPLOSIVE,
 		SWORD,
 		NONE
+	}
+	
+	public enum TrackingOptions{
+		WUMPUS,
+		FLASHLIGHT,
+		SWORD,
+		EXPLOSIVE
 	}
 
 }

@@ -1,6 +1,7 @@
 package game;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -11,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -29,8 +32,9 @@ import javax.swing.event.ChangeListener;
 
 import game.GameData.GameState;
 import game.GameData.ItemTypes;
+import game.GameData.TrackingOptions;
 
-public class Game implements ActionListener, KeyListener {
+public class Game implements ActionListener, KeyListener{
 
 	public static Game game;
 	private JFrame frame;
@@ -40,7 +44,7 @@ public class Game implements ActionListener, KeyListener {
 	private GameState gameState;
 	private JLabel explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
 	private Clip themePlayer;
-	private boolean explosionInProgress, battleInProgress;
+	private boolean explosionInProgress, battleInProgress, inCompassMenu;
 
 	public Game() {
 		frame = new JFrame(GameData.FRAME_NAME);
@@ -56,7 +60,7 @@ public class Game implements ActionListener, KeyListener {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		startMusic(GameData.themeSong, true);
+		//startMusic(GameData.themeSong, true);
 		gameState = GameState.MENU;
 		addMenuWidgets();
 		timer.start();
@@ -126,10 +130,6 @@ public class Game implements ActionListener, KeyListener {
 			gameState = GameState.PAUSED;
 			addPausedWidgets();
 			break;
-		case COMPASS_MENU:
-			gameState = GameState.COMPASS_MENU;
-			addCompassMenuWidgets();
-			break;
 		case IN_GAME:
 			gameState = GameState.IN_GAME;
 			break;
@@ -193,12 +193,80 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	private void addCompassMenuWidgets(){
-		frame.removeKeyListener(this);
 		renderer.setLayout(null);
 		JButton wumpusButton = new JButton(GameData.wumpusButtonIcon);
-		JButton flashlightButton = new JButton(GameData.wumpusButtonIcon);
+		wumpusButton.setFocusable(false);
+		wumpusButton.setBounds(
+				GameData.FRAME_WIDTH + GameData.TOOLBAR_FRAME_WIDTH, 
+				(Toolbar.getItemSlot(ItemTypes.COMPASS) * GameData.TOOLBAR_SLOT_HEIGHT) + GameData.TOOLBAR_FRAME_HEIGHT,
+				GameData.MINI_COMPASS_BUTTONS_WIDTH,
+				GameData.MINI_COMPASS_BUTTONS_HEIGHT
+		);
+		wumpusButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Toolbar.setTrackingItem(TrackingOptions.WUMPUS);
+				setInCompassMenu(false);
+			}
+		});
+		
+		JButton flashlightButton = new JButton(GameData.flashlightButtonIcon);
+		flashlightButton.setFocusable(false);
+		flashlightButton.setBounds(
+				GameData.FRAME_WIDTH + GameData.TOOLBAR_FRAME_WIDTH + GameData.MINI_COMPASS_BUTTONS_WIDTH, 
+				(Toolbar.getItemSlot(ItemTypes.COMPASS) * GameData.TOOLBAR_SLOT_HEIGHT) + GameData.TOOLBAR_FRAME_HEIGHT,
+				GameData.MINI_COMPASS_BUTTONS_WIDTH,
+				GameData.MINI_COMPASS_BUTTONS_HEIGHT
+		);
+		flashlightButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Toolbar.setTrackingItem(TrackingOptions.FLASHLIGHT);
+				setInCompassMenu(false);
+			}
+		});
 		JButton swordButton = new JButton(GameData.swordButtonIcon);
+		swordButton.setFocusable(false);
+		swordButton.setBounds(
+				GameData.FRAME_WIDTH + GameData.TOOLBAR_FRAME_WIDTH, 
+				(Toolbar.getItemSlot(ItemTypes.COMPASS) * GameData.TOOLBAR_SLOT_HEIGHT) + GameData.TOOLBAR_FRAME_HEIGHT + GameData.MINI_COMPASS_BUTTONS_HEIGHT,
+				GameData.MINI_COMPASS_BUTTONS_WIDTH,
+				GameData.MINI_COMPASS_BUTTONS_HEIGHT
+		);
+		swordButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Toolbar.setTrackingItem(TrackingOptions.SWORD);
+				setInCompassMenu(false);
+			}
+		});
 		JButton explosiveButton = new JButton(GameData.explosiveButtonIcon);
+		explosiveButton.setFocusable(false);
+		explosiveButton.setBounds(
+				GameData.FRAME_WIDTH + GameData.TOOLBAR_FRAME_WIDTH + GameData.MINI_COMPASS_BUTTONS_WIDTH, 
+				(Toolbar.getItemSlot(ItemTypes.COMPASS) * GameData.TOOLBAR_SLOT_HEIGHT) + GameData.TOOLBAR_FRAME_HEIGHT + GameData.MINI_COMPASS_BUTTONS_HEIGHT,
+				GameData.MINI_COMPASS_BUTTONS_WIDTH,
+				GameData.MINI_COMPASS_BUTTONS_HEIGHT
+		);
+		explosiveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Toolbar.setTrackingItem(TrackingOptions.EXPLOSIVE);
+				setInCompassMenu(false);
+			}
+		});
+		GameData.removeBackground(wumpusButton);
+		GameData.removeBackground(flashlightButton);
+		GameData.removeBackground(swordButton);
+		GameData.removeBackground(explosiveButton);
+		renderer.add(wumpusButton);
+		renderer.add(flashlightButton);
+		renderer.add(swordButton);
+		renderer.add(explosiveButton);
 	}
 	
 	private void addSettingsWidgets(){
@@ -368,7 +436,6 @@ public class Game implements ActionListener, KeyListener {
 			renderRules(g);
 			break;
 		case PAUSED:
-			renderPaused(g);
 		case IN_GAME:
 			renderInGame(g);
 			break;
@@ -398,7 +465,20 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	private void renderCompassMenu(Graphics g){
-		
+		System.out.println("RENDERING");
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.setColor(Color.BLACK);
+		g2.setStroke(new BasicStroke(1));
+		if(Toolbar.getItemSlot(ItemTypes.COMPASS) != -1) {
+			g2.drawLine(GameData.FRAME_WIDTH + GameData.TOOLBAR_FRAME_WIDTH, 
+					(Toolbar.getItemSlot(ItemTypes.COMPASS) * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2), 
+					GameData.FRAME_EXTENDED_WIDTH - GameData.TOOLBAR_FRAME_WIDTH, 
+					(Toolbar.getItemSlot(ItemTypes.COMPASS) * GameData.TOOLBAR_SLOT_HEIGHT) + (GameData.TOOLBAR_SLOT_HEIGHT/2));
+			g2.drawLine(GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2), 
+					(Toolbar.getItemSlot(ItemTypes.COMPASS) * GameData.TOOLBAR_SLOT_HEIGHT) + GameData.TOOLBAR_FRAME_HEIGHT, 
+					GameData.FRAME_WIDTH + (GameData.FRAME_EXTRA_WIDTH/2),
+					((Toolbar.getItemSlot(ItemTypes.COMPASS)+1) * GameData.TOOLBAR_SLOT_HEIGHT) - GameData.TOOLBAR_FRAME_HEIGHT);
+		} 
 	}
 	
 	private void renderInGame(Graphics g){
@@ -409,7 +489,7 @@ public class Game implements ActionListener, KeyListener {
 		Toolbar.render(g);
 		if(gameState == GameState.PAUSED) {
 			renderPaused(g);
-		}else if(gameState == GameState.COMPASS_MENU){
+		}else if(inCompassMenu){
 			renderCompassMenu(g);
 		}
 	}
@@ -452,6 +532,11 @@ public class Game implements ActionListener, KeyListener {
 					Player.shoot();    
 				}
 				break;
+			case KeyEvent.VK_C:
+				if(Toolbar.compassAvailable() && inCompassMenu == false) {
+					setInCompassMenu(true);
+				}
+				break;
 			case KeyEvent.VK_X:
 				if(!explosionInProgress) {
 					Player.attack();
@@ -477,6 +562,9 @@ public class Game implements ActionListener, KeyListener {
 			switch(e.getKeyCode()) {
 			case KeyEvent.VK_ESCAPE:
 				renderer.removeAll();
+				if(inCompassMenu) {
+					setInCompassMenu(true);
+				}
 				gameState = GameState.IN_GAME;
 				break;
 			}
@@ -613,6 +701,19 @@ public class Game implements ActionListener, KeyListener {
 			update();
 		}
 	}
+	
+	public void setInCompassMenu(boolean inMenu) {
+		inCompassMenu = inMenu;
+		if(inMenu == true) {
+			addCompassMenuWidgets();
+		}else {
+			renderer.removeAll();
+		}
+	}
+	
+	public boolean inCompassMenu() {
+		return inCompassMenu;
+	}
 
 	public JFrame getFrame() {
 		return frame;
@@ -620,6 +721,10 @@ public class Game implements ActionListener, KeyListener {
 
 	public Tile[][] getTiles() {
 		return tiles;
+	}
+	
+	public GameState getGameState() {
+		return gameState;
 	}
 
 	public static void main(String[] args) {
