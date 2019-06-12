@@ -9,10 +9,10 @@ public class Wumpus {
 	private static float opacity;
 	
 	static {
-		opacity = 1f;
+		opacity = 0f;
 		do {
-			row = (int) (Math.random() * GameData.TILE_AMOUNT);
-			column = (int) (Math.random() * GameData.TILE_AMOUNT);
+			row = (int) (Math.random() * GameData.BOARD_SIZE);
+			column = (int) (Math.random() * GameData.BOARD_SIZE);
 		}while(row == 0 && column == 0);
 	}
 	
@@ -22,7 +22,7 @@ public class Wumpus {
 		if(rowVColumn == 0) {
 			if(row == 0) {
 				movement = 1;
-			}else if (row == GameData.TILE_AMOUNT-1) {
+			}else if (row == GameData.BOARD_SIZE-1) {
 				movement = -1;
 			}else{
 				movement = (int) (Math.random()*2);
@@ -36,7 +36,7 @@ public class Wumpus {
 		}else {
 			if(column == 0) {
 				movement = 1;
-			}else if (column == GameData.TILE_AMOUNT-1) {
+			}else if (column == GameData.BOARD_SIZE-1) {
 				movement = -1;
 			}else{
 				movement = (int) (Math.random()*2);
@@ -64,6 +64,14 @@ public class Wumpus {
 		}else if(opacity + GameData.WUMPUS_FADE_SPEED <= 1f && Game.game.getTiles()[row][column].isFlashlightAffected()) {
 			opacity += GameData.WUMPUS_FADE_SPEED;	
 		}
+	}
+	
+	public static void reset() {
+		opacity = 0f;
+		do {
+			row = (int) (Math.random() * GameData.BOARD_SIZE);
+			column = (int) (Math.random() * GameData.BOARD_SIZE);
+		}while(row == 0 && column == 0);
 	}
 	
 	public static void setMoving(boolean moving) {

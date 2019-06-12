@@ -1,5 +1,32 @@
 package game;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import game.GameData.GameState;
 import game.GameData.ItemTypes;
 
@@ -29,7 +56,6 @@ public class Game implements ActionListener, KeyListener {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		initialize();
 		//startMusic(GameData.themeSong, true);
 		gameState = GameState.MENU;
 		addMenuWidgets();
@@ -37,12 +63,15 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	private void initialize() {
-		tiles = new Tile[GameData.TILE_AMOUNT][GameData.TILE_AMOUNT];
+		tiles = new Tile[GameData.BOARD_SIZE][GameData.BOARD_SIZE];
 		for (int r = 0; r < tiles.length; r++) {
 			for (int c = 0; c < tiles[r].length; c++) {
 				tiles[r][c] = new Tile(r, c);
 			}
 		}
+		Player.setSuperSayain(false);
+		Player.setLocation(0, 0);
+		Wumpus.reset();
 		tiles[0][0].setDiscovered(true);
 		initItems();
 		explosionAnimation = new JLabel(GameData.explosionAnimation);
@@ -51,22 +80,31 @@ public class Game implements ActionListener, KeyListener {
 		winningAnimation = new JLabel(GameData.winningAnimation);
 		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_EXTENDED_WIDTH;
 		GameData.FRAME_HEIGHT_DIFFERENCE = frame.getHeight() - GameData.FRAME_HEIGHT;
+		GameData.FRAME_WIDTH += 600 % GameData.BOARD_SIZE;
+		GameData.FRAME_HEIGHT += 650 % GameData.BOARD_SIZE;
+		GameData.FRAME_EXTENDED_WIDTH = GameData.FRAME_WIDTH + GameData.FRAME_EXTRA_WIDTH;
+		frame.setPreferredSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
+		GameData.TILE_WIDTH = GameData.FRAME_WIDTH / GameData.BOARD_SIZE;
+		GameData.TILE_HEIGHT = GameData.FRAME_HEIGHT / GameData.BOARD_SIZE;
 	}
 
 	private void initItems() {
+		Toolbar.removeAll();
 		Toolbar.addItem(ItemTypes.EXPLOSIVE);
 		assignNewRandomTile(ItemTypes.EXPLOSIVE);
 		assignNewRandomTile(ItemTypes.EXPLOSIVE);
-		assignNewRandomTile(ItemTypes.FLASHLIGHT);
 		assignNewRandomTile(ItemTypes.COMPASS);
 		assignNewRandomTile(ItemTypes.SWORD);
+		for(int i = 0; i < GameData.FLASHLIGHT_AMOUNT; i++) {
+			assignNewRandomTile(ItemTypes.FLASHLIGHT);
+		}
 	}
 	
 	private void assignNewRandomTile(ItemTypes item) {
 		int randRow, randCol;
 		do {
-			randRow = (int) (Math.random() * GameData.TILE_AMOUNT);
-			randCol = (int) (Math.random() * GameData.TILE_AMOUNT);
+			randRow = (int) (Math.random() * GameData.BOARD_SIZE);
+			randCol = (int) (Math.random() * GameData.BOARD_SIZE);
 		}while(randRow + randCol == 0 || tiles[randRow][randCol].getItem() != ItemTypes.NONE);
 	 	tiles[randRow][randCol].setItem(item);		
 	}
@@ -82,6 +120,7 @@ public class Game implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				initialize();
 				gameState = GameState.IN_GAME;
 				renderer.removeAll();
 			}
@@ -131,9 +170,14 @@ public class Game implements ActionListener, KeyListener {
 	
 	private void addSettingsWidgets(){
 		renderer.revalidate();
-		JSlider tileAmountSlider = new JSlider(3, 50);
-		tileAmountSlider.setValue(8);
-		JLabel tileAmountLbl = new JLabel("Tile array: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
+		final JSlider tileAmountSlider = new JSlider(3, 50);
+		final JLabel tileAmountLbl = new JLabel("Board Size: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
+		final JSlider playerSpeedSlider = new JSlider(1, 20);
+		final JLabel playerSpeedLbl = new JLabel("Player Speed: " + playerSpeedSlider.getValue() + " m/s");
+		final JSlider flashlightAmountSlider = new JSlider(0, tileAmountSlider.getValue()-1);
+		final JLabel flashlightAmountLbl = new JLabel(flashlightAmountSlider.getValue() + " Flashlight");
+
+		tileAmountSlider.setFocusable(false);
 		tileAmountSlider.setOpaque(false);
 		tileAmountSlider.setBounds(
 				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - tileAmountSlider.getPreferredSize().getWidth()/2),
@@ -146,7 +190,7 @@ public class Game implements ActionListener, KeyListener {
 		tileAmountLbl.setBounds(
 				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - tileAmountLbl.getPreferredSize().getWidth()/2),
 				(GameData.FRAME_HEIGHT/5) - 50,
-				(int) 500, 
+				GameData.FRAME_EXTENDED_WIDTH, 
 				(int) tileAmountLbl.getPreferredSize().getHeight()
 		);
 		tileAmountSlider.addChangeListener(new ChangeListener() {
@@ -156,16 +200,16 @@ public class Game implements ActionListener, KeyListener {
 				tileAmountLbl.setBounds(
 						(int) (GameData.FRAME_EXTENDED_WIDTH/2 - tileAmountLbl.getPreferredSize().getWidth()/2),
 						(GameData.FRAME_HEIGHT/5) - 50,
-						(int) 500, 
+						GameData.FRAME_EXTENDED_WIDTH, 
 						(int) tileAmountLbl.getPreferredSize().getHeight()
 				);
-				tileAmountLbl.setText("Tile array: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
+				tileAmountLbl.setText("Board Size: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
+				flashlightAmountSlider.setMaximum(tileAmountSlider.getValue()-1);
+				playerSpeedSlider.setMaximum(20);
 			}
 		});
 		
-		JSlider playerSpeedSlider = new JSlider(1, 20);
-		playerSpeedSlider.setValue(5);
-		JLabel playerSpeedLbl = new JLabel("Player speed: " + playerSpeedSlider.getValue() + " m/s");
+		playerSpeedSlider.setFocusable(false);
 		playerSpeedSlider.setOpaque(false);
 		playerSpeedSlider.setBounds(
 				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - playerSpeedSlider.getPreferredSize().getWidth()/2),
@@ -178,7 +222,7 @@ public class Game implements ActionListener, KeyListener {
 		playerSpeedLbl.setBounds(
 				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - playerSpeedLbl.getPreferredSize().getWidth()/2),
 				(2*GameData.FRAME_HEIGHT/5) - 50,
-				(int) playerSpeedLbl.getPreferredSize().getWidth(), 
+				GameData.FRAME_EXTENDED_WIDTH,
 				(int) playerSpeedLbl.getPreferredSize().getHeight()
 		);
 		playerSpeedSlider.addChangeListener(new ChangeListener() {
@@ -188,25 +232,99 @@ public class Game implements ActionListener, KeyListener {
 				playerSpeedLbl.setBounds(
 						(int) (GameData.FRAME_EXTENDED_WIDTH/2 - playerSpeedLbl.getPreferredSize().getWidth()/2),
 						(2*GameData.FRAME_HEIGHT/5) - 50,
-						(int) playerSpeedLbl.getPreferredSize().getWidth(), 
+						GameData.FRAME_EXTENDED_WIDTH, 
 						(int) playerSpeedLbl.getPreferredSize().getHeight()
 				);
-				playerSpeedLbl.setText("Player speed: " + playerSpeedSlider.getValue() + " m/s");
+				playerSpeedLbl.setText("Player Speed: " + playerSpeedSlider.getValue() + " m/s");
 			}
 		});
 		
-//		JLabel flashlightAmountLbl = new JLabel();
-//		JSlider flashlightAmountSlider = new JSlider();
-//		
+		flashlightAmountSlider.setFocusable(false);
+		flashlightAmountSlider.setOpaque(false);
+		flashlightAmountSlider.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - flashlightAmountSlider.getPreferredSize().getWidth()/2),
+				(3*GameData.FRAME_HEIGHT/5),
+				(int) flashlightAmountSlider.getPreferredSize().getWidth(), 
+				(int) flashlightAmountSlider.getPreferredSize().getHeight()
+		);
+		flashlightAmountLbl.setFont(new Font("Arial", Font.BOLD , 18));
+		flashlightAmountLbl.setForeground(Color.WHITE);
+		flashlightAmountLbl.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - flashlightAmountLbl.getPreferredSize().getWidth()/2),
+				(3*GameData.FRAME_HEIGHT/5) - 50,
+				GameData.FRAME_EXTENDED_WIDTH,
+				(int) flashlightAmountLbl.getPreferredSize().getHeight()
+		);
+		flashlightAmountSlider.addChangeListener(new ChangeListener() {
+			@Override	
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				flashlightAmountLbl.setBounds(
+						(int) (GameData.FRAME_EXTENDED_WIDTH/2 - flashlightAmountLbl.getPreferredSize().getWidth()/2),
+						(3*GameData.FRAME_HEIGHT/5) - 50,
+						GameData.FRAME_EXTENDED_WIDTH,
+						(int) flashlightAmountLbl.getPreferredSize().getHeight()
+				);
+				if(flashlightAmountSlider.getValue() != 1) {
+					flashlightAmountLbl.setText(flashlightAmountSlider.getValue() + " Flashlights");
+				}else {
+					flashlightAmountLbl.setText(flashlightAmountSlider.getValue() + " Flashlight");
+				}
+			}
+		});
+		tileAmountSlider.setValue(GameData.BOARD_SIZE);
+		playerSpeedSlider.setValue(GameData.PLAYER_VELOCITY);
+		flashlightAmountSlider.setValue(GameData.FLASHLIGHT_AMOUNT);
+		JButton saveButton = new JButton(GameData.saveUnselectedIcon);
+		saveButton.setRolloverIcon(GameData.saveSelectedIcon);
+		saveButton.setFocusable(false);
+		GameData.removeBackground(saveButton);
+		saveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				gameState = GameState.MENU;
+				GameData.BOARD_SIZE = tileAmountSlider.getValue();
+				GameData.PLAYER_VELOCITY = playerSpeedSlider.getValue();
+				GameData.FLASHLIGHT_AMOUNT = flashlightAmountSlider.getValue();
+				renderer.removeAll();
+				addMenuWidgets();
+			}
+		});
+		saveButton.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - saveButton.getPreferredSize().getWidth()/2) - 150,
+				(int) (3.7*GameData.FRAME_HEIGHT/5),
+				(int) saveButton.getPreferredSize().getWidth(),
+				(int) saveButton.getPreferredSize().getHeight()
+		);
+		JButton cancelButton = new JButton(GameData.cancelUnselectedIcon);
+		cancelButton.setRolloverIcon(GameData.cancelSelectedIcon);
+		cancelButton.setFocusable(false);
+		GameData.removeBackground(cancelButton);
+		cancelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				gameState = GameState.MENU;
+				renderer.removeAll();
+				addMenuWidgets();
+			}
+		});
+		cancelButton.setBounds(
+				(int) (GameData.FRAME_EXTENDED_WIDTH/2 - cancelButton.getPreferredSize().getWidth()/2) + 150,
+				(int) (3.7*GameData.FRAME_HEIGHT/5),
+				(int) cancelButton.getPreferredSize().getWidth(),
+				(int) cancelButton.getPreferredSize().getHeight()
+		);
 		renderer.setLayout(null);
 		renderer.add(tileAmountSlider);
 		renderer.add(tileAmountLbl);
 		renderer.add(playerSpeedSlider);
 		renderer.add(playerSpeedLbl);
-
-		//JSlider for player speed
-		//JSlider for amount of tiles
-		//JSlider for amount of flashlights
+		renderer.add(flashlightAmountSlider);
+		renderer.add(flashlightAmountLbl);
+		renderer.add(saveButton);
+		renderer.add(cancelButton);
 	}
 	
 	public void render(Graphics g) {
@@ -363,7 +481,6 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	private void update() {
-		updateSize();
 		Tile.updateTilesOpacity();
 		Player.updatePos();
 		Wumpus.updateFadeMove();
@@ -377,8 +494,8 @@ public class Game implements ActionListener, KeyListener {
 			GameData.FRAME_EXTENDED_WIDTH = (int) frame.getWidth() - GameData.FRAME_WIDTH_DIFFERENCE;
 			GameData.FRAME_WIDTH = GameData.FRAME_EXTENDED_WIDTH - GameData.FRAME_EXTRA_WIDTH;
 			GameData.FRAME_HEIGHT = (int) frame.getHeight() - GameData.FRAME_HEIGHT_DIFFERENCE;
-			GameData.TILE_WIDTH = GameData.FRAME_WIDTH / GameData.TILE_AMOUNT;
-			GameData.TILE_HEIGHT = GameData.FRAME_HEIGHT / GameData.TILE_AMOUNT;
+			GameData.TILE_WIDTH = GameData.FRAME_WIDTH / GameData.BOARD_SIZE;
+			GameData.TILE_HEIGHT = GameData.FRAME_HEIGHT / GameData.BOARD_SIZE;
 			GameData.TOOLBAR_SLOT_HEIGHT = GameData.FRAME_HEIGHT/GameData.TOOLBAR_SLOTS;
 			GameData.PLAYER_VELOCITY = (int) ((GameData.FRAME_WIDTH * GameData.FRAME_HEIGHT) / GameData.FRAME_SIZE_TO_VELOCITY);
 			GameData.rescaleAnimations();
@@ -462,7 +579,9 @@ public class Game implements ActionListener, KeyListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		renderer.repaint();
-		update();
+		if(gameState == GameState.IN_GAME) {
+			update();
+		}
 	}
 
 	public JFrame getFrame() {

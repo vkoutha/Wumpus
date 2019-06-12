@@ -42,7 +42,7 @@ public class Player {
 					moving = true;
 					row--;
 				}
-			} else if (direction == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
+			} else if (direction == MovementDirections.DOWN && row < GameData.BOARD_SIZE - 1) {
 				if (movementDirection == direction) {
 					moving = true;
 					row++;
@@ -52,7 +52,7 @@ public class Player {
 					moving = true;
 					column--;
 				}
-			} else if (direction == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
+			} else if (direction == MovementDirections.RIGHT && column < GameData.BOARD_SIZE - 1) {
 				if (movementDirection == direction) {
 					moving = true;
 					column++;
@@ -70,11 +70,11 @@ public class Player {
 	private static void setSprite(MovementDirections direction) {
 		if (direction == MovementDirections.UP && row > 0) {
 			spritesToUse = !isSuperSayain ? GameData.characterForwardsSprite : GameData.superSayainForwardsSprite;
-		} else if (direction == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
+		} else if (direction == MovementDirections.DOWN && row < GameData.BOARD_SIZE - 1) {
 			spritesToUse = !isSuperSayain ? GameData.characterBackwardsSprite : GameData.superSayainBackwardsSprite;
 		} else if (direction == MovementDirections.LEFT && column > 0) {
 			spritesToUse = !isSuperSayain ? GameData.characterLeftSprite : GameData.superSayainLeftSprite;
-		} else if (direction == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
+		} else if (direction == MovementDirections.RIGHT && column < GameData.BOARD_SIZE - 1) {
 			spritesToUse = !isSuperSayain ? GameData.characterRightSprite : GameData.superSayainRightSprite;
 		}
 	}
@@ -104,6 +104,8 @@ public class Player {
 //		if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
 //			battleWumpus();
 //		}
+		x = GameData.TILE_WIDTH * column;
+		y = GameData.TILE_HEIGHT * row;
 		if(moving == true) {
 			moving = false;
 			spriteIndex = 0;
@@ -138,11 +140,11 @@ public class Player {
 	public static void shoot() {
 		if (movementDirection == MovementDirections.UP && row > 0) {
 			Game.game.explodeTile(row - 1, column, GameData.explosionAnimation);
-		} else if (movementDirection == MovementDirections.DOWN && row < GameData.TILE_AMOUNT - 1) {
+		} else if (movementDirection == MovementDirections.DOWN && row < GameData.BOARD_SIZE - 1) {
 			Game.game.explodeTile(row + 1, column, GameData.explosionAnimation);
 		} else if (movementDirection == MovementDirections.LEFT && column > 0) {
 			Game.game.explodeTile(row, column - 1, GameData.explosionAnimation);
-		} else if (movementDirection == MovementDirections.RIGHT && column < GameData.TILE_AMOUNT - 1) {
+		} else if (movementDirection == MovementDirections.RIGHT && column < GameData.BOARD_SIZE - 1) {
 			Game.game.explodeTile(row, column + 1, GameData.explosionAnimation);
 		}
 		Toolbar.removeItem(ItemTypes.EXPLOSIVE);
@@ -150,10 +152,17 @@ public class Player {
 	
 	public static void setSuperSayain(boolean superSayain) {
 		isSuperSayain = superSayain;
+		setSprite(movementDirection);
 		if(superSayain == true) {
-			setSprite(movementDirection);
 			Game.game.explodeTile(row, column, GameData.ultimateExplosionAnimation);
 		}
+	}
+	
+	public static void setLocation(int row, int column) {
+		Player.row = row;
+		Player.column = column;
+		x = column / GameData.TILE_WIDTH;
+		y = row / GameData.TILE_HEIGHT;
 	}
 	
 	public static void setXPos(int xPos) {

@@ -90,7 +90,6 @@ public class Tile {
 	
 	public void setOpacity(float opacity) {
 		this.opacity = opacity;
-		System.out.println("New Opacity: 0");
 	}
 	
 	public static void updateTiles() {

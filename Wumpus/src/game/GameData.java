@@ -15,11 +15,11 @@ import javax.swing.JButton;
 public class GameData {
 	
 	public static final String FRAME_NAME = "Wumpus";
-	public static final int TILE_AMOUNT = 8;
-	public static int FRAME_WIDTH = 600 + (600 % TILE_AMOUNT);
+	public static int BOARD_SIZE = 8;
+	public static int FRAME_WIDTH = 600 + (600 % BOARD_SIZE);
 	public static int FRAME_EXTENDED_WIDTH = FRAME_WIDTH + 140;
 	public static int FRAME_EXTRA_WIDTH = FRAME_EXTENDED_WIDTH - FRAME_WIDTH;
-	public static int FRAME_HEIGHT = 650 ;
+	public static int FRAME_HEIGHT = 650 - (650 % BOARD_SIZE);
 	
 	public static int FRAME_WIDTH_DIFFERENCE = 0;
 	public static int FRAME_HEIGHT_DIFFERENCE = 0;
@@ -30,8 +30,8 @@ public class GameData {
 	
 	public static final int VERTICAL_DISTANCE_BETWEEN_BUTTONS = 20;
 	
-	public static int TILE_WIDTH = (FRAME_WIDTH/TILE_AMOUNT);
-	public static int TILE_HEIGHT = (FRAME_HEIGHT/TILE_AMOUNT);
+	public static int TILE_WIDTH = (FRAME_WIDTH/BOARD_SIZE);
+	public static int TILE_HEIGHT = (FRAME_HEIGHT/BOARD_SIZE);
 	
 	public static int PLAYER_VELOCITY = 5;
 	public static final double FRAME_SIZE_TO_VELOCITY = (FRAME_WIDTH * FRAME_HEIGHT) / PLAYER_VELOCITY;
@@ -39,6 +39,7 @@ public class GameData {
 	public static final int TOOLBAR_SLOTS = 4;
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
 	public static final int TOOLBAR_ITEM_PROPORTION = 5;
+	public static int FLASHLIGHT_AMOUNT = 1;
 	
 	public static final int COMPASS_VECTOR_SCALE = 13;
 	public static final int COMPASS_NEEDLE_VERTICAL_SHIFT = -5;
@@ -60,7 +61,7 @@ public class GameData {
 	public static BufferedImage toolbarBox;
 	public static BufferedImage flashlightSprite, compassSprite, blankCompassSprite, goldSprite, explosiveSprite, swordSprite;
 	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
-			rulesSelectedIcon;
+			rulesSelectedIcon, saveUnselectedIcon, saveSelectedIcon, cancelUnselectedIcon, cancelSelectedIcon;
 	private static Image explosionAnimationImage, ultimateExplosionAnimationImage, losingAnimationImage, winningAnimationImage;
 	public static ImageIcon explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
 	
@@ -101,6 +102,14 @@ public class GameData {
 			rulesUnselectedIcon = new ImageIcon(rulesUnselectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
 			BufferedImage rulesSelectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/rulesClicked.png"));
 			rulesSelectedIcon = new ImageIcon(rulesSelectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage saveUnselectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/saveUnclicked.png"));
+			saveUnselectedIcon = new ImageIcon(saveUnselectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage saveSelectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/saveClicked.png"));
+			saveSelectedIcon = new ImageIcon(saveSelectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage cancelUnselectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/cancelUnclicked.png"));
+			cancelUnselectedIcon = new ImageIcon(cancelUnselectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
+			BufferedImage cancelSelectedImage = ImageIO.read(GameData.class.getResource("/img/buttons/cancelClicked.png"));
+			cancelSelectedIcon = new ImageIcon(cancelSelectedImage.getScaledInstance(FRAME_EXTENDED_WIDTH/3, 65, Image.SCALE_DEFAULT));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

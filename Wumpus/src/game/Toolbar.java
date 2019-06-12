@@ -73,6 +73,14 @@ public class Toolbar {
 		}
 	}
 	
+	public static void removeAll() {
+		items.clear();
+		flashlightCount = 0;
+		compassCount = 0;
+		explosiveCount = 0;
+		goldCount = 0;
+	}
+	
 	public static int getExplosiveCount() {
 		return explosiveCount;
 	}
