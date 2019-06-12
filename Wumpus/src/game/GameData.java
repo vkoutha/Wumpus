@@ -64,6 +64,7 @@ public class GameData {
 			rulesSelectedIcon, saveUnselectedIcon, saveSelectedIcon, cancelUnselectedIcon, cancelSelectedIcon;
 	private static Image explosionAnimationImage, ultimateExplosionAnimationImage, losingAnimationImage, winningAnimationImage;
 	public static ImageIcon explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
+	public static ImageIcon wumpusButtonIcon, flashlightButtonIcon, swordButtonIcon, explosiveButtonIcon;
 	
 	static {
 		initMusic();
@@ -220,6 +221,13 @@ public class GameData {
 		}
 	}
 	
+	private static void initButtonImages(){
+		wumpusButtonIcon = new ImageIcon(wumpusSprite);
+		flashlightButtonIcon = new ImageIcon(flashlightSprite);
+		swordButtonIcon = new ImageIcon(swordSprite);
+		explosiveButtonIcon = new ImageIcon(explosiveSprite);
+	}
+	
 	public static void removeBackground(JButton button) {
 		button.setContentAreaFilled(false);
 		button.setFocusPainted(false);
@@ -231,13 +239,17 @@ public class GameData {
 		explosionAnimationImage = explosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
 		explosionAnimation = new ImageIcon(explosionAnimationImage);
 		
+		ultimateExplosionAnimation = new ImageIcon(GameData.class.getResource("/img/animations/ultimateExplosion.gif"));
+		ultimateExplosionAnimationImage = ultimateExplosionAnimation.getImage().getScaledInstance((int) (TILE_WIDTH), TILE_HEIGHT, Image.SCALE_DEFAULT);
+		ultimateExplosionAnimation = new ImageIcon(ultimateExplosionAnimationImage);
+		
 		losingAnimation = new ImageIcon(GameData.class.getResource("/img/animations/losingAnimation.gif"));
 		losingAnimationImage = losingAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
 		losingAnimation = new ImageIcon(losingAnimationImage);
+		
 		winningAnimation = new ImageIcon(GameData.class.getResource("/img/animations/winningAnimation.gif"));
 		winningAnimationImage = winningAnimation.getImage().getScaledInstance(FRAME_EXTENDED_WIDTH, FRAME_HEIGHT, Image.SCALE_DEFAULT);
 		winningAnimation = new ImageIcon(winningAnimationImage);
-		
 	}
 	
 	public static boolean within(double x, double y) {
@@ -249,6 +261,7 @@ public class GameData {
 		SETTINGS,
 		RULES,
 		IN_GAME,
+		COMPASS_MENU,
 		PAUSED
 	}
 	

@@ -56,7 +56,7 @@ public class Game implements ActionListener, KeyListener {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//startMusic(GameData.themeSong, true);
+		startMusic(GameData.themeSong, true);
 		gameState = GameState.MENU;
 		addMenuWidgets();
 		timer.start();
@@ -74,10 +74,6 @@ public class Game implements ActionListener, KeyListener {
 		Wumpus.reset();
 		tiles[0][0].setDiscovered(true);
 		initItems();
-		explosionAnimation = new JLabel(GameData.explosionAnimation);
-		ultimateExplosionAnimation = new JLabel(GameData.ultimateExplosionAnimation);
-		losingAnimation = new JLabel(GameData.losingAnimation);
-		winningAnimation = new JLabel(GameData.winningAnimation);
 		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_EXTENDED_WIDTH;
 		GameData.FRAME_HEIGHT_DIFFERENCE = frame.getHeight() - GameData.FRAME_HEIGHT;
 		GameData.FRAME_WIDTH += 600 % GameData.BOARD_SIZE;
@@ -86,6 +82,11 @@ public class Game implements ActionListener, KeyListener {
 		frame.setPreferredSize(new Dimension(GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT));
 		GameData.TILE_WIDTH = GameData.FRAME_WIDTH / GameData.BOARD_SIZE;
 		GameData.TILE_HEIGHT = GameData.FRAME_HEIGHT / GameData.BOARD_SIZE;
+		GameData.rescaleAnimations();
+		explosionAnimation = new JLabel(GameData.explosionAnimation);
+		ultimateExplosionAnimation = new JLabel(GameData.ultimateExplosionAnimation);
+		losingAnimation = new JLabel(GameData.losingAnimation);
+		winningAnimation = new JLabel(GameData.winningAnimation);
 	}
 
 	private void initItems() {
@@ -109,8 +110,36 @@ public class Game implements ActionListener, KeyListener {
 	 	tiles[randRow][randCol].setItem(item);		
 	}
 	
-	private void addMenuWidgets() {
+	public void setGameState(GameData.GameState state){
+		renderer.removeAll();
 		renderer.revalidate();
+		switch(state){
+		case MENU:
+			gameState = GameState.MENU;
+			addMenuWidgets();
+			break;
+		case SETTINGS:
+			gameState = GameState.SETTINGS;
+			addSettingsWidgets();
+			break;
+		case PAUSED:
+			gameState = GameState.PAUSED;
+			addPausedWidgets();
+			break;
+		case COMPASS_MENU:
+			gameState = GameState.COMPASS_MENU;
+			addCompassMenuWidgets();
+			break;
+		case IN_GAME:
+			gameState = GameState.IN_GAME;
+			break;
+		case RULES:
+			gameState = GameState.RULES;
+			break;
+		}
+	}
+	
+	private void addMenuWidgets() {
 		renderer.setLayout(new BoxLayout(renderer, BoxLayout.PAGE_AXIS));
 		JButton startGameButton = new JButton(GameData.startGameUnselectedIcon);
 		startGameButton.setRolloverIcon(GameData.startGameSelectedIcon);
@@ -121,8 +150,7 @@ public class Game implements ActionListener, KeyListener {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				initialize();
-				gameState = GameState.IN_GAME;
-				renderer.removeAll();
+				setGameState(GameState.IN_GAME);
 			}
 		});
 		startGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -137,10 +165,7 @@ public class Game implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				gameState = GameState.SETTINGS;
-				renderer.setLayout(null);
-				renderer.removeAll();
-				addSettingsWidgets();
+				setGameState(GameState.SETTINGS);
 			}
 		});
 		settingsMenuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -155,8 +180,7 @@ public class Game implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				gameState = GameState.SETTINGS;
-				renderer.removeAll();
+				setGameState(GameState.IN_GAME);
 			}
 		});
 		rulesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -166,6 +190,15 @@ public class Game implements ActionListener, KeyListener {
 	
 	private void addPausedWidgets(){
 		addMenuWidgets();
+	}
+	
+	private void addCompassMenuWidgets(){
+		frame.removeKeyListener(this);
+		renderer.setLayout(null);
+		JButton wumpusButton = new JButton(GameData.wumpusButtonIcon);
+		JButton flashlightButton = new JButton(GameData.wumpusButtonIcon);
+		JButton swordButton = new JButton(GameData.swordButtonIcon);
+		JButton explosiveButton = new JButton(GameData.explosiveButtonIcon);
 	}
 	
 	private void addSettingsWidgets(){
@@ -283,12 +316,10 @@ public class Game implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				gameState = GameState.MENU;
+				setGameState(GameState.MENU);
 				GameData.BOARD_SIZE = tileAmountSlider.getValue();
 				GameData.PLAYER_VELOCITY = playerSpeedSlider.getValue();
 				GameData.FLASHLIGHT_AMOUNT = flashlightAmountSlider.getValue();
-				renderer.removeAll();
-				addMenuWidgets();
 			}
 		});
 		saveButton.setBounds(
@@ -305,9 +336,7 @@ public class Game implements ActionListener, KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				gameState = GameState.MENU;
-				renderer.removeAll();
-				addMenuWidgets();
+				setGameState(GameState.MENU);
 			}
 		});
 		cancelButton.setBounds(
@@ -362,6 +391,13 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	private void renderPaused(Graphics g){
+		g.setColor(Color.DARK_GRAY);
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.setComposite(AlphaComposite.SrcOver.derive(.8f));
+		g2.fillRect(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+	}
+	
+	private void renderCompassMenu(Graphics g){
 		
 	}
 	
@@ -372,10 +408,9 @@ public class Game implements ActionListener, KeyListener {
 		Player.render(g);
 		Toolbar.render(g);
 		if(gameState == GameState.PAUSED) {
-			g.setColor(Color.DARK_GRAY);
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setComposite(AlphaComposite.SrcOver.derive(.8f));
-			g2.fillRect(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+			renderPaused(g);
+		}else if(gameState == GameState.COMPASS_MENU){
+			renderCompassMenu(g);
 		}
 	}
 
@@ -388,9 +423,7 @@ public class Game implements ActionListener, KeyListener {
 		case SETTINGS:
 			switch(e.getKeyCode()) {
 			case KeyEvent.VK_ESCAPE:
-				gameState = GameState.MENU;
-				renderer.removeAll();
-				addMenuWidgets();
+				setGameState(GameState.MENU);
 				break;
 			}
 			break;
@@ -436,9 +469,7 @@ public class Game implements ActionListener, KeyListener {
 			case KeyEvent.VK_T:
 				break;
 			case KeyEvent.VK_ESCAPE:
-				System.out.println(gameState);
-				gameState = GameState.PAUSED;
-				addMenuWidgets();
+				setGameState(GameState.PAUSED);
 				break;
 			}
 			break;
@@ -509,7 +540,6 @@ public class Game implements ActionListener, KeyListener {
 	}
 	
 	public void explodeTile(final int row, final int column, final ImageIcon animationToUse) {
-		//frame.setResizable(false);
 		explosionInProgress = true;
 		final JLabel animation;
 		if(animationToUse == GameData.explosionAnimation) {

@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+import game.GameData.GameState;
 import game.GameData.ItemTypes;
 
 public class Toolbar {
@@ -23,6 +24,7 @@ public class Toolbar {
 		}else if(item == ItemTypes.COMPASS) {
 			if(compassCount == 0) {
 				items.add(ItemTypes.COMPASS);
+				
 			}
 			compassCount++;
 		}else if (item == ItemTypes.EXPLOSIVE) {
@@ -59,6 +61,7 @@ public class Toolbar {
 			compassCount--;
 			if(compassCount == 0) {
 				items.remove(ItemTypes.COMPASS);
+				Game.game.setGameState(GameState.COMPASS_MENU);
 			}
 		}else if (item == ItemTypes.EXPLOSIVE) {
 			explosiveCount--;
