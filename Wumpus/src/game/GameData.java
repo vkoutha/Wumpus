@@ -257,6 +257,14 @@ public class GameData {
 		winningAnimation = new ImageIcon(winningAnimationImage);
 	}
 	
+	public static void pause(double seconds){
+		try{
+			Thread.sleep((long) (seconds * 1000));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	public static boolean within(double x, double y) {
 		return Math.abs(x - y) < PLAYER_VELOCITY;
 	}

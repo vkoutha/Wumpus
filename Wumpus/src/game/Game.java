@@ -60,7 +60,7 @@ public class Game implements ActionListener, KeyListener{
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//startMusic(GameData.themeSong, true);
+		startMusic(GameData.themeSong, true);
 		gameState = GameState.MENU;
 		addMenuWidgets();
 		timer.start();
@@ -584,10 +584,18 @@ public class Game implements ActionListener, KeyListener{
 
 	}
 	
-	private void startMusic(AudioInputStream stream, boolean loop) { 
+	private void playTheme(boolean loop){
+			}
+	
+	private void playBattle(boolean loop){
+		
+	}
+	
+	public void startMusic(AudioInputStream stream, boolean loop) { 
 		try {
 			if(themePlayer != null && themePlayer.getMicrosecondPosition() > 0) {
 				themePlayer.stop();
+				themePlayer.close();
 			}
 			themePlayer = AudioSystem.getClip();
 			themePlayer.open(stream);
@@ -599,6 +607,7 @@ public class Game implements ActionListener, KeyListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 	private void update() {
@@ -662,24 +671,28 @@ public class Game implements ActionListener, KeyListener{
 	}
 	
 	public void setWinner(boolean playerWon) {
-		battleInProgress = true;
+		update();
+		renderer.repaint();
+		frame.removeKeyListener(this);
 		if(playerWon) {
-			frame.setResizable(false);
+			GameData.pause(2);
 			winningAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
 			renderer.add(winningAnimation);
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					GameData.pause(1);
 					long startTime = System.currentTimeMillis();
 					while(System.currentTimeMillis() - startTime < 15000) {
 					}
 					renderer.remove(winningAnimation);
-					frame.setResizable(true);
 					initialize();
+					startMusic(GameData.themeSong, true);
+					frame.addKeyListener(Game.game);
 				}
 			}).start();
 		}else {
-			frame.setResizable(false);
+			GameData.pause(2);
 			losingAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
 			renderer.add(losingAnimation);
 			new Thread(new Runnable() {
@@ -689,8 +702,9 @@ public class Game implements ActionListener, KeyListener{
 					while(System.currentTimeMillis() - startTime < 15000) {
 					}
 					renderer.remove(losingAnimation);
-					frame.setResizable(true);
 					initialize();
+					startMusic(GameData.themeSong, true);
+					frame.addKeyListener(Game.game);
 				}
 			}).start();
 		}

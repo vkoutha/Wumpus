@@ -58,9 +58,12 @@ public class Player {
 					column++;
 				}
 			}
-			if(moving == true) {
-				Wumpus.setMoving(true);
-				Wumpus.updateFadeMove();
+			if(row == Wumpus.getRow() && column == Wumpus.getColumn()){
+				battleWumpus();
+			}else{
+				if(moving == true) {
+					Wumpus.setMoving(true);
+				}
 			}
 			Game.game.getTiles()[row][column].setDiscovered(true);
 			movementDirection = direction;		
@@ -115,6 +118,7 @@ public class Player {
 
 	private static void battleWumpus() {
 		double chance = (Math.random() * 100);
+		Game.game.startMusic(GameData.battleSong, false);
 		if (Toolbar.weaponAvailable()) {
 			if (chance <= 80) {
 				Game.game.setWinner(true);

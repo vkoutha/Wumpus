@@ -48,9 +48,9 @@ public class Wumpus {
 			}
 			column += movement;
 		}
-//		if(row == Player.getRow() && column == Player.getColumn()) {
-//			battlePlayer();
-//		}
+		if(row == Player.getRow() && column == Player.getColumn()) {
+			battlePlayer();
+		}
 	}
 	
 	public static void updateFadeMove() {
@@ -63,6 +63,9 @@ public class Wumpus {
 			}
 		}else if(opacity + GameData.WUMPUS_FADE_SPEED <= 1f && Game.game.getTiles()[row][column].isFlashlightAffected()) {
 			opacity += GameData.WUMPUS_FADE_SPEED;	
+		}
+		if(row == Player.getRow() || column == Player.getColumn()){
+			opacity = 1f;
 		}
 	}
 	
@@ -80,6 +83,7 @@ public class Wumpus {
 	
 	private static void battlePlayer() {
 		double chance = (Math.random()*100);
+		Game.game.startMusic(GameData.battleSong, false);
 		if(Toolbar.weaponAvailable()) {
 			if(chance <= 65) {
 				Game.game.setWinner(true);
