@@ -190,19 +190,19 @@ public class Player {
 	}
 	
 	private static boolean isFacing(int row, int column) {
-		if(row > Player.row) {
+		if(row > Player.row && column == Player.column) {
 			if(movementDirection == MovementDirections.DOWN) {
 				return true;
 			}
-		}else if (row < Player.row) {
+		}else if (row < Player.row && column == Player.column) {
 			if(movementDirection == MovementDirections.UP) {
 				return true;
 			}
-		}else if (column > Player.column) {
+		}else if (column > Player.column && row == Player.row) {
 			if(movementDirection == MovementDirections.RIGHT) {
 				return true;
 			}
-		}else if(column < Player.column) {
+		}else if(column < Player.column && row == Player.row) {
 			if(movementDirection == MovementDirections.LEFT) {
 				return true;
 			}

@@ -535,6 +535,8 @@ public class Game implements ActionListener, KeyListener{
 			case KeyEvent.VK_C:
 				if(Toolbar.compassAvailable() && inCompassMenu == false) {
 					setInCompassMenu(true);
+				}else {
+					setInCompassMenu(false);
 				}
 				break;
 			case KeyEvent.VK_X:

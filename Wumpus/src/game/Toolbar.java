@@ -25,7 +25,6 @@ public class Toolbar {
 		}else if(item == ItemTypes.COMPASS) {
 			if(compassCount == 0) {
 				items.add(ItemTypes.COMPASS);
-				Game.game.setInCompassMenu(true);
 			}
 			compassCount++;
 		}else if (item == ItemTypes.EXPLOSIVE) {
@@ -205,13 +204,16 @@ public class Toolbar {
 		(slot * (GameData.TOOLBAR_SLOT_HEIGHT)+(GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION)), 
 		GameData.FRAME_EXTRA_WIDTH - (2*GameData.FRAME_EXTRA_WIDTH/GameData.TOOLBAR_ITEM_PROPORTION),
 		GameData.TOOLBAR_SLOT_HEIGHT - (2*GameData.TOOLBAR_SLOT_HEIGHT/GameData.TOOLBAR_ITEM_PROPORTION), null);
-		int yDiff = getTrackingItemCoordinate()[0] - Player.getRow();
-		int xDiff = getTrackingItemCoordinate()[1] - Player.getColumn(); 
+		int xDiff = -1, yDiff = -1;
+		if(itemToTrack != null && getTrackingItemCoordinate()[0] != -1) {
+			xDiff = getTrackingItemCoordinate()[1] - Player.getColumn(); 
+			yDiff = getTrackingItemCoordinate()[0] - Player.getRow();
+		}
 		double xVect = GameData.COMPASS_VECTOR_SCALE * (xDiff / Math.hypot(yDiff, xDiff));
 		double yVect = GameData.COMPASS_VECTOR_SCALE * (yDiff / Math.hypot(xDiff, yDiff));
 		if(xDiff == 0 && yDiff == 0) {
 			g2.setColor(Color.GREEN);
-		}else if(getTrackingItemCoordinate()[0] == -1 && getTrackingItemCoordinate()[0] == -1) {
+		}else if(xDiff == -1 && yDiff == -1) {
 			xVect = 0;
 			yVect = 0;
 			g2.setColor(Color.ORANGE);
