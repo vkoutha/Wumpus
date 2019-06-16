@@ -16,6 +16,8 @@ public class GameData {
 	
 	public static final String FRAME_NAME = "Wumpus";
 	public static int BOARD_SIZE = 8;
+	public static final int MINIMUM_BOARD_SIZE = 3;
+	public static final int MAXIMUM_BOARD_SIZE = 50;
 	public static int FRAME_WIDTH = 600 + (600 % BOARD_SIZE);
 	public static int FRAME_EXTENDED_WIDTH = FRAME_WIDTH + 140;
 	public static int FRAME_EXTRA_WIDTH = FRAME_EXTENDED_WIDTH - FRAME_WIDTH;
@@ -34,8 +36,11 @@ public class GameData {
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/BOARD_SIZE);
 	
 	public static int PLAYER_VELOCITY = 5;
+	public static final int MINIMUM_PLAYER_VELOCITY = 1;
+	public static final int MAXIMUM_PLAYER_VELOCITY = 50;
 	public static int ENERGY_BALL_VELOCITY = 10;
 	public static final double FRAME_SIZE_TO_VELOCITY = (FRAME_WIDTH * FRAME_HEIGHT) / PLAYER_VELOCITY;
+	
 	
 	public static final int TOOLBAR_SLOTS = 4;
 	public static final int TOOLBAR_FRAME_WIDTH = 22;
@@ -43,6 +48,7 @@ public class GameData {
 	public static int TOOLBAR_SLOT_HEIGHT = FRAME_HEIGHT/TOOLBAR_SLOTS;
 	public static final int TOOLBAR_ITEM_PROPORTION = 5;
 	public static int FLASHLIGHT_AMOUNT = 1;
+	public static final int MINIMUM_FLASHLIGHT_AMOUNT = 0;
 	
 	public static final int COMPASS_VECTOR_SCALE = 13;
 	public static final int COMPASS_NEEDLE_VERTICAL_SHIFT = -5;
@@ -52,6 +58,12 @@ public class GameData {
 	public static final float WUMPUS_FADE_SPEED = .05f;
 	public static final float TILE_BRIGHTENING_SPEED = .05f;
 	public static final float TILE_DIMMING_SPEED = .02f;
+	
+	public static final int PLAYER_INTO_WUMPUS_CHANCE = 20;
+	public static final int WUMPUS_INTO_PLAYER_CHANCE = 5;
+	public static final int SUPER_SAYAIN_INCREASE_CHANCE = 60;
+	
+	public static final int BATTLE_TO_ANIMATION_DELAY = 2;
 
 	public static final AlphaComposite MAX_OPACITY = AlphaComposite.SrcOver.derive(1f);
 	public static final AlphaComposite FLASHLIGHT_BLOCK_OPACITY = AlphaComposite.SrcOver.derive(.7f);
