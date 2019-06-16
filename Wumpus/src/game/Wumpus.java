@@ -1,6 +1,8 @@
 package game;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class Wumpus {
 	
@@ -54,7 +56,7 @@ public class Wumpus {
 	}
 	
 	public static void updateFadeMove() {
-		if(opacity > 0f && moving) {
+		if(opacity > 0f && moving && (row != Player.getRow() || column != Player.getColumn())) {
 			opacity -= GameData.WUMPUS_FADE_SPEED;
 			if(opacity <= 0f) {
 				move();
@@ -64,9 +66,13 @@ public class Wumpus {
 		}else if(opacity + GameData.WUMPUS_FADE_SPEED <= 1f && Game.game.getTiles()[row][column].isFlashlightAffected()) {
 			opacity += GameData.WUMPUS_FADE_SPEED;	
 		}
-		if(row == Player.getRow() || column == Player.getColumn()){
-			opacity = 1f;
-		}
+//		if(opacity + GameData.WUMPUS_FADE_SPEED <= 1f && row == Player.getRow() && column == Player.getColumn()){
+//			opacity += GameData.WUMPUS_FADE_SPEED;
+//		}
+	}
+	
+	public static void setOpacity(float opacity) {
+		Wumpus.opacity = opacity;
 	}
 	
 	public static void reset() {
@@ -83,18 +89,24 @@ public class Wumpus {
 	
 	private static void battlePlayer() {
 		double chance = (Math.random()*100);
-		Game.game.startMusic(GameData.battleSong, false);
+		//Game.game.startMusic(GameData.battleSong, false);
+		System.out.println(chance);
+		System.out.println("WUMPUS BUMPED INTO PLAYER");
 		if(Toolbar.weaponAvailable()) {
 			if(chance <= 65) {
 				Game.game.setWinner(true);
+				System.out.println("PLAYER SHOULD WIN");
 			}else {
 				Game.game.setWinner(false);
+				System.out.println("PLAYER SHOULD LOSE");
 			}
 		}else {
 			if(chance <= 5) {
 				Game.game.setWinner(true);
+				System.out.println("PLAYER SHOULD WIN");
 			}else {
 				Game.game.setWinner(false);
+				System.out.println("PLAYER SHOULD LOSE");
 			}
 		}
 	}
@@ -116,7 +128,10 @@ public class Wumpus {
 	 * @param g
 	 */
 	public static void render(Graphics g) {
-		//g.drawImage(GameData.wumpusSprite, x, y, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+		Graphics2D g2 = (Graphics2D)g.create();
+		g2.setComposite(AlphaComposite.SrcOver.derive(Wumpus.getOpacity()));
+		g2.drawImage(GameData.wumpusSprite, column * GameData.TILE_WIDTH, row * GameData.TILE_HEIGHT, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+		g2.setComposite(AlphaComposite.SrcOver.derive(1f));
 	}
 
 }

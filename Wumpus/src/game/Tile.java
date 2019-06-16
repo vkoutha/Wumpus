@@ -130,6 +130,9 @@ public class Tile {
 	}
 	
 	private boolean isFlashlightAffectedCalc() {
+		if(row == Player.getRow() && column == Player.getColumn()) {
+			return true;
+		}
 		if(Toolbar.getFlashlightRadius() == 0) {
 			return false;
 		}

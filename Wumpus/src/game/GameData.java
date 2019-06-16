@@ -34,6 +34,7 @@ public class GameData {
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/BOARD_SIZE);
 	
 	public static int PLAYER_VELOCITY = 5;
+	public static int ENERGY_BALL_VELOCITY = 10;
 	public static final double FRAME_SIZE_TO_VELOCITY = (FRAME_WIDTH * FRAME_HEIGHT) / PLAYER_VELOCITY;
 	
 	public static final int TOOLBAR_SLOTS = 4;
@@ -48,7 +49,7 @@ public class GameData {
 	public static final int MINI_COMPASS_BUTTONS_WIDTH = (FRAME_EXTENDED_WIDTH - TOOLBAR_FRAME_WIDTH) - (FRAME_WIDTH + FRAME_EXTRA_WIDTH/2);
 	public static final int MINI_COMPASS_BUTTONS_HEIGHT = (GameData.TOOLBAR_SLOT_HEIGHT - GameData.TOOLBAR_FRAME_HEIGHT) - (GameData.TOOLBAR_SLOT_HEIGHT/2);
 	
-	public static final float WUMPUS_FADE_SPEED = .04f;
+	public static final float WUMPUS_FADE_SPEED = .05f;
 	public static final float TILE_BRIGHTENING_SPEED = .05f;
 	public static final float TILE_DIMMING_SPEED = .02f;
 
@@ -66,6 +67,7 @@ public class GameData {
 	public static BufferedImage flashlightSprite, compassSprite, blankCompassSprite, goldSprite, explosiveSprite, swordSprite;
 	public static Icon startGameUnselectedIcon, startGameSelectedIcon, settingsUnselectedIcon, settingsSelectedIcon, rulesUnselectedIcon, 
 			rulesSelectedIcon, saveUnselectedIcon, saveSelectedIcon, cancelUnselectedIcon, cancelSelectedIcon;
+	public static BufferedImage energyBallSprite;
 	private static Image explosionAnimationImage, ultimateExplosionAnimationImage, losingAnimationImage, winningAnimationImage;
 	public static ImageIcon explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
 	public static ImageIcon wumpusButtonIcon, flashlightButtonIcon, swordButtonIcon, explosiveButtonIcon;
@@ -221,6 +223,7 @@ public class GameData {
 			//goldSprite = ImageIO.read(GameData.class.getResource("/img/items/goldSprite.png"));
 			explosiveSprite = ImageIO.read(GameData.class.getResource("/img/items/explosiveSprite.png"));
 			swordSprite = ImageIO.read(GameData.class.getResource("/img/items/swordSprite.png"));
+			energyBallSprite = ImageIO.read(GameData.class.getResource("/img/items/energyBall.png"));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -257,6 +260,10 @@ public class GameData {
 		winningAnimation = new ImageIcon(winningAnimationImage);
 	}
 	
+	public static void resetSounds() {
+		initMusic();
+	}
+	
 	public static void pause(double seconds){
 		try{
 			Thread.sleep((long) (seconds * 1000));
@@ -265,8 +272,22 @@ public class GameData {
 		}
 	}
 	
-	public static boolean within(double x, double y) {
-		return Math.abs(x - y) < PLAYER_VELOCITY;
+	public static double getExplosionChanceToWin() {
+		double chance = 30;
+		int distance;
+		if(Player.getRow() - Player.getRow() == 0) {
+			distance = Math.abs(Player.getColumn() - Player.getColumn());
+		}else {
+			distance = Math.abs(Player.getRow() - Player.getRow());
+		}
+		for(int i = 1; i < distance; i++) {
+			chance/=2;
+		}
+		return chance;
+	}
+	
+	public static boolean within(double x, double y, int latency) {
+		return Math.abs(x - y) < latency;
 	}
 	
 	public enum GameState{

@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -44,7 +45,7 @@ public class Game implements ActionListener, KeyListener{
 	private GameState gameState;
 	private JLabel explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
 	private Clip themePlayer;
-	private boolean explosionInProgress, battleInProgress, inCompassMenu;
+	private boolean explosionInProgress, inCompassMenu, gameOver;
 
 	public Game() {
 		frame = new JFrame(GameData.FRAME_NAME);
@@ -91,6 +92,7 @@ public class Game implements ActionListener, KeyListener{
 		ultimateExplosionAnimation = new JLabel(GameData.ultimateExplosionAnimation);
 		losingAnimation = new JLabel(GameData.losingAnimation);
 		winningAnimation = new JLabel(GameData.winningAnimation);
+		gameOver = false;
 	}
 
 	private void initItems() {
@@ -273,7 +275,7 @@ public class Game implements ActionListener, KeyListener{
 		renderer.revalidate();
 		final JSlider tileAmountSlider = new JSlider(3, 50);
 		final JLabel tileAmountLbl = new JLabel("Board Size: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
-		final JSlider playerSpeedSlider = new JSlider(1, 20);
+		final JSlider playerSpeedSlider = new JSlider(1, 100);
 		final JLabel playerSpeedLbl = new JLabel("Player Speed: " + playerSpeedSlider.getValue() + " m/s");
 		final JSlider flashlightAmountSlider = new JSlider(0, tileAmountSlider.getValue()-1);
 		final JLabel flashlightAmountLbl = new JLabel(flashlightAmountSlider.getValue() + " Flashlight");
@@ -306,7 +308,7 @@ public class Game implements ActionListener, KeyListener{
 				);
 				tileAmountLbl.setText("Board Size: " + tileAmountSlider.getValue() + "x" + tileAmountSlider.getValue());
 				flashlightAmountSlider.setMaximum(tileAmountSlider.getValue()-1);
-				playerSpeedSlider.setMaximum(20);
+				//playerSpeedSlider.setMaximum(20);
 			}
 		});
 		
@@ -486,6 +488,9 @@ public class Game implements ActionListener, KeyListener{
 			for (Tile tile : tileArr)
 				tile.render(g);
 		Player.render(g);
+		if(Wumpus.getRow() == Player.getRow() && Wumpus.getColumn() == Player.getColumn()) {
+			Wumpus.render(g);
+		}
 		Toolbar.render(g);
 		if(gameState == GameState.PAUSED) {
 			renderPaused(g);
@@ -528,7 +533,7 @@ public class Game implements ActionListener, KeyListener{
 				Player.move(GameData.MovementDirections.DOWN);
 				break;
 			case KeyEvent.VK_SPACE:
-				if(!explosionInProgress && Toolbar.getExplosiveCount() > 0) {
+				if(!explosionInProgress) {
 					Player.shoot();    
 				}
 				break;
@@ -540,10 +545,6 @@ public class Game implements ActionListener, KeyListener{
 				}
 				break;
 			case KeyEvent.VK_X:
-				if(!explosionInProgress) {
-					Player.attack();
-				}
-			case KeyEvent.VK_Z:
 				if(tiles[Player.getRow()][Player.getColumn()].getItem() != ItemTypes.NONE) {
 					Toolbar.addItem(tiles[Player.getRow()][Player.getColumn()].getItem());
 					Tile.updateTiles();
@@ -593,7 +594,8 @@ public class Game implements ActionListener, KeyListener{
 	
 	public void startMusic(AudioInputStream stream, boolean loop) { 
 		try {
-			if(themePlayer != null && themePlayer.getMicrosecondPosition() > 0) {
+			GameData.resetSounds();
+			if(themePlayer != null && themePlayer.isOpen() ) {
 				themePlayer.stop();
 				themePlayer.close();
 			}
@@ -611,9 +613,11 @@ public class Game implements ActionListener, KeyListener{
 	}
 
 	private void update() {
-		Tile.updateTilesOpacity();
-		Player.updatePos();
-		Wumpus.updateFadeMove();
+		if(!gameOver) {
+			Tile.updateTilesOpacity();
+			Player.updatePos();
+			Wumpus.updateFadeMove();
+		}
 	}
 
 	private void updateSize() {
@@ -663,51 +667,59 @@ public class Game implements ActionListener, KeyListener{
 				}
 				renderer.remove(animation);
 				explosionInProgress = false;
-				frame.setResizable(true);
+				if(row == Wumpus.getRow() && column == Wumpus.getColumn()) {
+					explosionBattle();
+				}
 			} 
 		}).start();
 		tiles[row][column].setDiscovered(true);
 		tiles[row][column].setItem(ItemTypes.NONE);
 	}
 	
-	public void setWinner(boolean playerWon) {
-		update();
-		renderer.repaint();
-		frame.removeKeyListener(this);
-		if(playerWon) {
-			GameData.pause(2);
-			winningAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
-			renderer.add(winningAnimation);
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					GameData.pause(1);
-					long startTime = System.currentTimeMillis();
-					while(System.currentTimeMillis() - startTime < 15000) {
-					}
-					renderer.remove(winningAnimation);
-					initialize();
-					startMusic(GameData.themeSong, true);
-					frame.addKeyListener(Game.game);
-				}
-			}).start();
-		}else {
-			GameData.pause(2);
-			losingAnimation.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
-			renderer.add(losingAnimation);
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					long startTime = System.currentTimeMillis();
-					while(System.currentTimeMillis() - startTime < 15000) {
-					}
-					renderer.remove(losingAnimation);
-					initialize();
-					startMusic(GameData.themeSong, true);
-					frame.addKeyListener(Game.game);
-				}
-			}).start();
+	private void explosionBattle() {
+		double chance = Math.random() * 100;
+		if(!Player.isSuperSayain()) {
+			if(chance <= GameData.getExplosionChanceToWin()) {
+				//setWinner(true);
+				gameOver = true;
+			}
+		}else{
+			if(chance <= GameData.getExplosionChanceToWin() + 60) {
+				//setWinner(true);
+				gameOver = true;
+			}
 		}
+		if(gameOver) {
+			frame.removeKeyListener(this);
+			Wumpus.setOpacity(0f);
+		}
+	}
+	
+	public void setWinner(boolean playerWon) {
+		frame.removeKeyListener(this);
+		final JLabel animationToUse;
+		if(playerWon) {
+			animationToUse = winningAnimation;
+		}else {
+			animationToUse = losingAnimation;
+		}
+		startMusic(GameData.battleSong, false);
+		System.out.println("Switched to battle song");
+		new Thread(new Runnable() {
+				@Override
+				public void run() {
+					GameData.pause(2);
+					animationToUse.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
+					renderer.add(animationToUse);
+					long startTime = System.currentTimeMillis();
+					while(System.currentTimeMillis() - startTime < 15000);
+					renderer.remove(animationToUse);
+					initialize();
+					frame.addKeyListener(Game.game);
+					startMusic(GameData.themeSong, true);
+					System.out.println("Switched back to theme song");
+				}
+		}).start();	
 	}
 	
 	@Override

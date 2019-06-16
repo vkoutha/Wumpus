@@ -92,6 +92,7 @@ public class Toolbar {
 		flashlightCount = 0;
 		compassCount = 0;
 		explosiveCount = 0;
+		swordCount = 0;
 		goldCount = 0;
 	}
 	
@@ -213,7 +214,7 @@ public class Toolbar {
 		double yVect = GameData.COMPASS_VECTOR_SCALE * (yDiff / Math.hypot(xDiff, yDiff));
 		if(xDiff == 0 && yDiff == 0) {
 			g2.setColor(Color.GREEN);
-		}else if(xDiff == -1 && yDiff == -1) {
+		}else if(itemToTrack == null || (itemToTrack != null && getTrackingItemCoordinate()[0] == -1)) {
 			xVect = 0;
 			yVect = 0;
 			g2.setColor(Color.ORANGE);
