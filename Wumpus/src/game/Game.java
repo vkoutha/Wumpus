@@ -61,7 +61,7 @@ public class Game implements ActionListener, KeyListener {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		startMusic(GameData.themeSong, true);
+		startMusic(GameData.menuSong, true);
 		gameState = GameState.MENU;
 		addMenuWidgets();
 		timer.start();
@@ -79,6 +79,7 @@ public class Game implements ActionListener, KeyListener {
 		Wumpus.reset();
 		tiles[0][0].setDiscovered(true);
 		initItems();
+		startMusic(GameData.themeSong, true);
 		GameData.FRAME_WIDTH_DIFFERENCE = frame.getWidth() - GameData.FRAME_EXTENDED_WIDTH;
 		GameData.FRAME_HEIGHT_DIFFERENCE = frame.getHeight() - GameData.FRAME_HEIGHT;
 		GameData.FRAME_WIDTH += 600 % GameData.BOARD_SIZE;
@@ -122,7 +123,6 @@ public class Game implements ActionListener, KeyListener {
 		switch (state) {
 		case MENU:
 			gameState = GameState.MENU;
-			startMusic(GameData.themeSong, true);
 			addMenuWidgets();
 			break;
 		case SETTINGS:
@@ -539,6 +539,7 @@ public class Game implements ActionListener, KeyListener {
 				}else {
 					renderer.removeAll();
 					setGameState(GameState.MENU);
+					startMusic(GameData.menuSong, true);
 				}
 				break;
 			}
@@ -693,7 +694,7 @@ public class Game implements ActionListener, KeyListener {
 					;
 				renderer.remove(animationToUse);
 				initialize();
-				startMusic(GameData.themeSong, true);
+				startMusic(GameData.menuSong, true);
 				inBattle = false;
 			}
 		}).start();

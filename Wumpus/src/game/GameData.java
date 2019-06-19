@@ -68,7 +68,7 @@ public class GameData {
 	public static final AlphaComposite MAX_OPACITY = AlphaComposite.SrcOver.derive(1f);
 	public static final AlphaComposite FLASHLIGHT_BLOCK_OPACITY = AlphaComposite.SrcOver.derive(.7f);
 	
-	public static AudioInputStream themeSong, battleSong;
+	public static AudioInputStream menuSong, themeSong, battleSong;
 	
 	public static BufferedImage wumpusLogo, menuBackground, settingsMenuBackground;
 	public static BufferedImage rockSprite, grassSprite, litGrassSprite;
@@ -96,6 +96,7 @@ public class GameData {
 	
 	private static void initMusic() {
 		try {
+			menuSong = AudioSystem.getAudioInputStream(GameData.class.getResource("/sound/menuMusic.wav"));
 			themeSong =  AudioSystem.getAudioInputStream(GameData.class.getResource("/sound/theme.wav"));
 			battleSong = AudioSystem.getAudioInputStream(GameData.class.getResource("/sound/battleMusic.wav"));
 		}catch(Exception e) {
