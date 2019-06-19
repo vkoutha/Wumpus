@@ -45,7 +45,7 @@ public class Game implements ActionListener, KeyListener {
 	private GameState gameState;
 	private JLabel explosionAnimation, ultimateExplosionAnimation, losingAnimation, winningAnimation;
 	private Clip themePlayer;
-	private boolean explosionInProgress, inCompassMenu, gameOver;
+	private boolean explosionInProgress, inBattle, inCompassMenu, gameOver;
 
 	public Game() {
 		frame = new JFrame(GameData.FRAME_NAME);
@@ -122,6 +122,7 @@ public class Game implements ActionListener, KeyListener {
 		switch (state) {
 		case MENU:
 			gameState = GameState.MENU;
+			startMusic(GameData.themeSong, true);
 			addMenuWidgets();
 			break;
 		case SETTINGS:
@@ -533,7 +534,12 @@ public class Game implements ActionListener, KeyListener {
 			case KeyEvent.VK_T:
 				break;
 			case KeyEvent.VK_ESCAPE:
-				setGameState(GameState.PAUSED);
+				if(!inBattle) {
+					setGameState(GameState.PAUSED);
+				}else {
+					renderer.removeAll();
+					setGameState(GameState.MENU);
+				}
 				break;
 			}
 			break;
@@ -667,7 +673,7 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	public void setWinner(boolean playerWon) {
-		frame.removeKeyListener(this);
+		inBattle = true;
 		final JLabel animationToUse;
 		if (playerWon) {
 			animationToUse = winningAnimation;
@@ -687,9 +693,8 @@ public class Game implements ActionListener, KeyListener {
 					;
 				renderer.remove(animationToUse);
 				initialize();
-				frame.addKeyListener(Game.game);
 				startMusic(GameData.themeSong, true);
-				System.out.println("Switched back to theme song");
+				inBattle = false;
 			}
 		}).start();
 	}
@@ -726,7 +731,7 @@ public class Game implements ActionListener, KeyListener {
 	public GameState getGameState() {
 		return gameState;
 	}
-
+ 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

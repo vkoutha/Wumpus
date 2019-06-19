@@ -35,10 +35,10 @@ public class GameData {
 	public static int TILE_WIDTH = (FRAME_WIDTH/BOARD_SIZE);
 	public static int TILE_HEIGHT = (FRAME_HEIGHT/BOARD_SIZE);
 	
-	public static int PLAYER_VELOCITY = 5;
+	public static int PLAYER_VELOCITY = 4;
 	public static final int MINIMUM_PLAYER_VELOCITY = 1;
 	public static final int MAXIMUM_PLAYER_VELOCITY = 50;
-	public static int ENERGY_BALL_VELOCITY = 10;
+	public static int ENERGY_BALL_VELOCITY = 15;
 	public static final double FRAME_SIZE_TO_VELOCITY = (FRAME_WIDTH * FRAME_HEIGHT) / PLAYER_VELOCITY;
 	
 	
