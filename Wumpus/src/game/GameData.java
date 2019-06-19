@@ -63,7 +63,7 @@ public class GameData {
 	public static final int WUMPUS_INTO_PLAYER_CHANCE = 5;
 	public static final int SUPER_SAYAIN_INCREASE_CHANCE = 60;
 	
-	public static final int BATTLE_TO_ANIMATION_DELAY = 2;
+	public static final int BATTLE_TO_ANIMATION_DELAY = 1;
 
 	public static final AlphaComposite MAX_OPACITY = AlphaComposite.SrcOver.derive(1f);
 	public static final AlphaComposite FLASHLIGHT_BLOCK_OPACITY = AlphaComposite.SrcOver.derive(.7f);
@@ -280,6 +280,14 @@ public class GameData {
 	public static void pause(double seconds){
 		try{
 			Thread.sleep((long) (seconds * 1000));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public static void pauseMilli(double milli){
+		try{
+			Thread.sleep((long) (milli));
 		}catch(Exception e){
 			e.printStackTrace();
 		}

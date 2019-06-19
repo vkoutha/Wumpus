@@ -441,7 +441,6 @@ public class Game implements ActionListener, KeyListener {
 	}
 
 	private void renderCompassMenu(Graphics g) {
-		System.out.println("RENDERING");
 		Graphics2D g2 = (Graphics2D) g.create();
 		g2.setColor(Color.BLACK);
 		g2.setStroke(new BasicStroke(1));
@@ -466,7 +465,7 @@ public class Game implements ActionListener, KeyListener {
 			for (Tile tile : tileArr)
 				tile.render(g);
 		Player.render(g);
-		if (Wumpus.getRow() == Player.getRow() && Wumpus.getColumn() == Player.getColumn()) {
+		if (inBattle) {
 			Wumpus.render(g);
 		}
 		Toolbar.render(g);
@@ -510,7 +509,7 @@ public class Game implements ActionListener, KeyListener {
 				Player.move(GameData.MovementDirections.DOWN);
 				break;
 			case KeyEvent.VK_SPACE:
-				if (!explosionInProgress) {
+				if (!explosionInProgress && Toolbar.getExplosiveCount() > 0) {
 					Player.shoot();
 				}
 				break;
@@ -675,6 +674,7 @@ public class Game implements ActionListener, KeyListener {
 
 	public void setWinner(boolean playerWon) {
 		inBattle = true;
+		Wumpus.setOpacity(1f);
 		final JLabel animationToUse;
 		if (playerWon) {
 			animationToUse = winningAnimation;
@@ -682,11 +682,16 @@ public class Game implements ActionListener, KeyListener {
 			animationToUse = losingAnimation;
 		}
 		startMusic(GameData.battleSong, false);
-		System.out.println("Switched to battle song");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				GameData.pause(GameData.BATTLE_TO_ANIMATION_DELAY);
+				GameData.pauseMilli(1000);
+				if(playerWon){
+					Wumpus.setOpacity(0f);
+				}else{
+					Player.setOpacity(0f);
+				}
+				GameData.pauseMilli(500);
 				animationToUse.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
 				renderer.add(animationToUse);
 				long startTime = System.currentTimeMillis();
@@ -703,10 +708,11 @@ public class Game implements ActionListener, KeyListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		renderer.repaint();
-		if (gameState == GameState.IN_GAME) {
+		if (gameState == GameState.IN_GAME && !inBattle) {
 			update();
 		}
-	}
+		
+	} 
 
 	public void setInCompassMenu(boolean inMenu) {
 		inCompassMenu = inMenu;

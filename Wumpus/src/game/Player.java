@@ -1,11 +1,14 @@
 package game;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.Timer;
+
 import game.GameData.ItemTypes;
 import game.GameData.MovementDirections;
 
@@ -13,12 +16,14 @@ public class Player {
 
 	private static int x, y, row, column, spriteIndex;
 	private static int energyBallX, energyBallY;
-	private static boolean isSuperSayain, moving;
+	private static float opacity;
+	private static boolean isSuperSayain, moving, firstItemFound, firstSwordFound, firstCompassFound;
 	private static GameData.MovementDirections movementDirection = MovementDirections.DOWN;
 	private static BufferedImage[] spritesToUse = GameData.characterBackwardsSprite;
 	private static Timer energyBallTimer;
 
 	static {
+		opacity = 1f;
 		energyBallX = -1;
 		energyBallY = -1;
 		new Timer(GameData.SPRITE_UPDATE_SPEED_MS, new ActionListener() {
@@ -62,16 +67,63 @@ public class Player {
 					column++;
 				}
 			}
-			if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
-				battleWumpus();
-			} else {
-				if (moving == true) {
-					Wumpus.setMoving(true);
-				}
+			if(Game.game.getTiles()[row][column].getItem() == ItemTypes.COMPASS && !firstCompassFound){
+				firstCompassFound = true;
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						if(!firstItemFound){
+							firstItemFound = true;
+							displayToast("Press X to pick a item!");
+							try{
+								Thread.sleep(50);
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+						displayToast("Press C to use the compass!");
+					}
+				}).start();
+				
+			}else if(Game.game.getTiles()[row][column].getItem() == ItemTypes.SWORD && !firstSwordFound){
+				firstSwordFound = true;
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						if(!firstItemFound){
+							firstItemFound = true;
+							displayToast("Press X to pick up an item!");
+						}
+						try{
+							Thread.sleep(50);
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+						displayToast("Press space with an explosive to shoot!");
+					}
+				}).start();
+			}else if(Game.game.getTiles()[row][column].getItem() != ItemTypes.NONE && !firstItemFound){
+				firstItemFound = true;
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						displayToast("Press X to pick a item!");
+					}
+				}).start();
+				
 			}
 			Game.game.getTiles()[row][column].setDiscovered(true);
 			movementDirection = direction;
 		}
+	}
+	
+	private static void displayToast(String text){
+		Toast toast = new Toast(text, (Player.getColumn()+3) * GameData.TILE_WIDTH, 
+				(Player.getRow()+2) * GameData.TILE_HEIGHT);
+		toast.showToast();
 	}
 
 	private static void setSprite(MovementDirections direction) {
@@ -114,6 +166,14 @@ public class Player {
 //		}
 		x = GameData.TILE_WIDTH * column;
 		y = GameData.TILE_HEIGHT * row;
+		if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
+			System.out.println("GOT TO HEREEEEE");
+			battleWumpus();
+		} else {
+			if (moving == true) {
+				Wumpus.setMoving(true);
+			}
+		}
 		if (moving == true) {
 			moving = false;
 			spriteIndex = 0;
@@ -165,6 +225,7 @@ public class Player {
 					spawnEnergyBall(row, GameData.BOARD_SIZE - 1);
 				}
 			}
+			Toolbar.removeItem(ItemTypes.EXPLOSIVE);
 		}
 	}
 
@@ -209,6 +270,7 @@ public class Player {
 					energyBallX = -1;
 					energyBallY = -1;
 					energyBallTimer.stop();
+					Wumpus.setMoving(true);
 				}
 			}
 		});
@@ -228,6 +290,10 @@ public class Player {
 		Player.column = column;
 		x = column / GameData.TILE_WIDTH;
 		y = row / GameData.TILE_HEIGHT;
+	}
+	
+	public static void setOpacity(float opacity){
+		Player.opacity = opacity;
 	}
 
 	public static void setXPos(int xPos) {
@@ -280,9 +346,11 @@ public class Player {
 	}
 
 	public static void render(Graphics g) {
-		g.drawImage(spritesToUse[spriteIndex], x, y, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.setComposite(AlphaComposite.SrcOver.derive(opacity));
+		g2.drawImage(spritesToUse[spriteIndex], x, y, GameData.TILE_WIDTH, GameData.TILE_HEIGHT, null);
 		if (energyBallX != -1 && energyBallY != -1) {
-			g.drawImage(GameData.energyBallSprite, energyBallX, energyBallY, GameData.TILE_WIDTH, GameData.TILE_HEIGHT,
+			g2.drawImage(GameData.energyBallSprite, energyBallX, energyBallY, GameData.TILE_WIDTH, GameData.TILE_HEIGHT,
 					null);
 		}
 	}
