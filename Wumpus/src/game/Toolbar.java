@@ -25,11 +25,14 @@ public class Toolbar {
 		} else if (item == ItemTypes.COMPASS) {
 			if (compassCount == 0) {
 				items.add(ItemTypes.COMPASS);
+				displayToast("Press C to use the compass!");
 			}
 			compassCount++;
 		} else if (item == ItemTypes.EXPLOSIVE) {
 			if (explosiveCount == 0) {
 				items.add(ItemTypes.EXPLOSIVE);
+			}else if(explosiveCount == 1) {
+				displayToast("Press space to explode!");
 			}
 			explosiveCount++;
 		} else if (item == ItemTypes.GOLD) {
@@ -39,9 +42,24 @@ public class Toolbar {
 			goldCount++;
 		} else if (item == ItemTypes.SWORD) {
 			Player.setSuperSayain(true);
-			items.add(ItemTypes.SWORD);
+			if(swordCount == 0) {
+				items.add(ItemTypes.SWORD);
+				displayToast("Press space with an explosive to shoot!");
+			}
 			swordCount++;
 		}
+	}
+	
+	private static void displayToast(final String text){
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Toast toast = new Toast(text, Game.game.getFrame().getX() + (GameData.FRAME_WIDTH), 
+						Game.game.getFrame().getY() + ((items.size() - 1) * GameData.TOOLBAR_SLOT_HEIGHT));
+				toast.display();
+			}
+		}).start();
 	}
 
 	public static boolean compassAvailable() {
@@ -166,14 +184,12 @@ public class Toolbar {
 						GameData.TOOLBAR_SLOT_HEIGHT
 								- (2 * GameData.TOOLBAR_SLOT_HEIGHT / GameData.TOOLBAR_ITEM_PROPORTION),
 						null);
-				// g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("x" + flashlightCount, GameData.FRAME_WIDTH + 5, (i * GameData.TOOLBAR_SLOT_HEIGHT) + 20);
 				break;
 			case COMPASS:
 				if (Game.game.inCompassMenu() == false) {
 					drawCompass(g, i);
 				}
-				g.drawString("Uses: " + compassCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case GOLD:
 				g.drawImage(GameData.goldSprite,
@@ -185,7 +201,6 @@ public class Toolbar {
 						GameData.TOOLBAR_SLOT_HEIGHT
 								- (2 * GameData.TOOLBAR_SLOT_HEIGHT / GameData.TOOLBAR_ITEM_PROPORTION),
 						null);
-				// g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("x" + goldCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case EXPLOSIVE:
@@ -198,7 +213,6 @@ public class Toolbar {
 						GameData.TOOLBAR_SLOT_HEIGHT
 								- (2 * GameData.TOOLBAR_SLOT_HEIGHT / GameData.TOOLBAR_ITEM_PROPORTION),
 						null);
-				// g.setFont(new Font("Arial", 15, Font.BOLD));
 				g.drawString("x" + explosiveCount, GameData.FRAME_WIDTH + 5, i * GameData.TOOLBAR_SLOT_HEIGHT + 20);
 				break;
 			case SWORD:

@@ -34,6 +34,7 @@ import javax.swing.event.ChangeListener;
 import game.GameData.GameState;
 import game.GameData.ItemTypes;
 import game.GameData.TrackingOptions;
+import jdk.vm.ci.code.site.Site;
 
 public class Game implements ActionListener, KeyListener {
 
@@ -74,8 +75,7 @@ public class Game implements ActionListener, KeyListener {
 				tiles[r][c] = new Tile(r, c);
 			}
 		}
-		Player.setSuperSayain(false);
-		Player.setLocation(0, 0);
+		Player.reset();
 		Wumpus.reset();
 		tiles[0][0].setDiscovered(true);
 		initItems();
@@ -94,6 +94,7 @@ public class Game implements ActionListener, KeyListener {
 		losingAnimation = new JLabel(GameData.losingAnimation);
 		winningAnimation = new JLabel(GameData.winningAnimation);
 		gameOver = false;
+		inBattle = false;
 	}
 
 	private void initItems() {
@@ -140,6 +141,7 @@ public class Game implements ActionListener, KeyListener {
 			gameState = GameState.RULES;
 			break;
 		}
+		renderer.revalidate();
 	}
 
 	private void addMenuWidgets() {
@@ -509,7 +511,7 @@ public class Game implements ActionListener, KeyListener {
 				Player.move(GameData.MovementDirections.DOWN);
 				break;
 			case KeyEvent.VK_SPACE:
-				if (!explosionInProgress && Toolbar.getExplosiveCount() > 0) {
+				if (!inBattle && !explosionInProgress && Toolbar.getExplosiveCount() > 0) {
 					Player.shoot();
 				}
 				break;
@@ -620,6 +622,7 @@ public class Game implements ActionListener, KeyListener {
 
 	public void explodeTile(final int row, final int column, final ImageIcon animationToUse) {
 		explosionInProgress = true;
+		final int wRow = Wumpus.getRow(), wCol = Wumpus.getColumn(); 
 		final JLabel animation;
 		if (animationToUse == GameData.explosionAnimation) {
 			animation = explosionAnimation;
@@ -640,11 +643,13 @@ public class Game implements ActionListener, KeyListener {
 				} else {
 					while (System.currentTimeMillis() - startTime < GameData.ULTIMATE_EXPLOSION_ANIMATION_TIME_MS) {
 						tiles[row][column].setOpacity(0f);
-					}
+					} 
 				}
 				renderer.remove(animation);
 				explosionInProgress = false;
-				if (row == Wumpus.getRow() && column == Wumpus.getColumn()) {
+				System.out.println("DOING EXPLOSION BATTLE BUT GOT HERE");
+				if (row == wRow && column == wCol) {
+					System.out.println("DOING EXPLOSION BATTLE");
 					explosionBattle();
 				}
 			}
@@ -655,26 +660,30 @@ public class Game implements ActionListener, KeyListener {
 
 	private void explosionBattle() {
 		double chance = Math.random() * 100;
+		tiles[Wumpus.getRow()][Wumpus.getColumn()].setDiscovered(true);
+		System.out.println("CHANCE TO WIN IS " + chance);
 		if (!Player.isSuperSayain()) {
+			System.out.println("IS NOT SUPER SAYAIN");
 			if (chance <= GameData.getExplosionChanceToWin()) {
-				// setWinner(true);
+				setWinner(true);
 				gameOver = true;
 			}
 		} else {
+			System.out.println("IS SUPER SAYAIN");
 			if (chance <= GameData.getExplosionChanceToWin() + GameData.SUPER_SAYAIN_INCREASE_CHANCE) {
-				// setWinner(true);
+				setWinner(true);
 				gameOver = true;
 			}
 		}
-		if (gameOver) {
-			frame.removeKeyListener(this);
-			Wumpus.setOpacity(0f);
+		if(!gameOver) {
+			Wumpus.setMoving(true);
 		}
 	}
 
-	public void setWinner(boolean playerWon) {
+	public void setWinner(final boolean playerWon) {
 		inBattle = true;
 		Wumpus.setOpacity(1f);
+		setInCompassMenu(false);
 		final JLabel animationToUse;
 		if (playerWon) {
 			animationToUse = winningAnimation;
@@ -695,12 +704,13 @@ public class Game implements ActionListener, KeyListener {
 				animationToUse.setBounds(0, 0, GameData.FRAME_EXTENDED_WIDTH, GameData.FRAME_HEIGHT);
 				renderer.add(animationToUse);
 				long startTime = System.currentTimeMillis();
-				while (System.currentTimeMillis() - startTime < 15000)
-					;
+				while (System.currentTimeMillis() - startTime < 15000); 
 				renderer.remove(animationToUse);
-				initialize();
-				startMusic(GameData.menuSong, true);
-				inBattle = false;
+				if(inBattle == true) {
+					setGameState(GameState.MENU);
+					startMusic(GameData.menuSong, true);
+					inBattle = false;
+				}
 			}
 		}).start();
 	}

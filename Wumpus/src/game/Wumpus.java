@@ -71,6 +71,11 @@ public class Wumpus {
 //			opacity += GameData.WUMPUS_FADE_SPEED;
 //		}
 	}
+	
+	public static void move(int row, int column) {
+		Wumpus.row = row;
+		Wumpus.column = column;
+	}
 
 	public static void setOpacity(float opacity) {
 		Wumpus.opacity = opacity;

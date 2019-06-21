@@ -314,7 +314,7 @@ public class GameData {
 	public enum GameState{
 		MENU,
 		SETTINGS,
-		RULES,
+		RULES, 
 		IN_GAME,
 		PAUSED
 	}

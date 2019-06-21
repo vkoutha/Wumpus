@@ -17,7 +17,7 @@ public class Player {
 	private static int x, y, row, column, spriteIndex;
 	private static int energyBallX, energyBallY;
 	private static float opacity;
-	private static boolean isSuperSayain, moving, firstItemFound, firstSwordFound, firstCompassFound;
+	private static boolean isSuperSayain, moving, firstItemFound;
 	private static GameData.MovementDirections movementDirection = MovementDirections.DOWN;
 	private static BufferedImage[] spritesToUse = GameData.characterBackwardsSprite;
 	private static Timer energyBallTimer;
@@ -67,63 +67,25 @@ public class Player {
 					column++;
 				}
 			}
-			if(Game.game.getTiles()[row][column].getItem() == ItemTypes.COMPASS && !firstCompassFound){
-				firstCompassFound = true;
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						if(!firstItemFound){
-							firstItemFound = true;
-							displayToast("Press X to pick a item!");
-							try{
-								Thread.sleep(50);
-							}catch(Exception e){
-								e.printStackTrace();
-							}
-						}
-						displayToast("Press C to use the compass!");
-					}
-				}).start();
-				
-			}else if(Game.game.getTiles()[row][column].getItem() == ItemTypes.SWORD && !firstSwordFound){
-				firstSwordFound = true;
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						if(!firstItemFound){
-							firstItemFound = true;
-							displayToast("Press X to pick up an item!");
-						}
-						try{
-							Thread.sleep(50);
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-						displayToast("Press space with an explosive to shoot!");
-					}
-				}).start();
-			}else if(Game.game.getTiles()[row][column].getItem() != ItemTypes.NONE && !firstItemFound){
+			if(Game.game.getTiles()[row][column].getItem() != ItemTypes.NONE && !firstItemFound){
 				firstItemFound = true;
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						displayToast("Press X to pick a item!");
-					}
-				}).start();
-				
+				displayToast("Press X to pick a item!");
 			}
 			Game.game.getTiles()[row][column].setDiscovered(true);
 			movementDirection = direction;
 		}
 	}
 	
-	private static void displayToast(String text){
-		Toast toast = new Toast(text, (Player.getColumn()+3) * GameData.TILE_WIDTH, 
-				(Player.getRow()+2) * GameData.TILE_HEIGHT);
-		toast.showToast();
+	private static void displayToast(final String text){
+		new Thread(new Runnable(){
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Toast toast = new Toast(text, Game.game.getFrame().getX() + (Player.getColumn() * GameData.TILE_WIDTH), 
+						Game.game.getFrame().getY() + (Player.getRow() * GameData.TILE_HEIGHT));
+				toast.display();
+			}
+		}).start();
 	}
 
 	private static void setSprite(MovementDirections direction) {
@@ -266,11 +228,11 @@ public class Player {
 				}
 				if ((GameData.within(energyBallX, eCol * GameData.TILE_WIDTH, GameData.ENERGY_BALL_VELOCITY)
 						&& GameData.within(energyBallY, eRow * GameData.TILE_HEIGHT, GameData.ENERGY_BALL_VELOCITY))) {
+					Wumpus.setOpacity(0f);
 					Game.game.explodeTile(eRow, eCol, GameData.ultimateExplosionAnimation);
 					energyBallX = -1;
 					energyBallY = -1;
 					energyBallTimer.stop();
-					Wumpus.setMoving(true);
 				}
 			}
 		});
@@ -290,6 +252,16 @@ public class Player {
 		Player.column = column;
 		x = column / GameData.TILE_WIDTH;
 		y = row / GameData.TILE_HEIGHT;
+	}
+	
+	public static void reset() {
+		setOpacity(1f);
+		setSuperSayain(false);
+		setLocation(0, 0);
+		spritesToUse = GameData.characterBackwardsSprite;
+		movementDirection = MovementDirections.DOWN;
+		spriteIndex = 0;
+		moving = false;
 	}
 	
 	public static void setOpacity(float opacity){
